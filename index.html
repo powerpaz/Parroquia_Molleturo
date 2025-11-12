@@ -1,54 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geovisor Molleturo</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Geovisor Agrícola de la Parroquia de Molleturo</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div id="map"></div>
-    <div id="layer-control">
-        <h3>Capas</h3>
-        <div>
-            <input type="checkbox" id="ActitudAgricola" checked>
-            <label for="ActitudAgricola">ActitudAgricola</label>
-        </div>
-        <div>
-            <input type="checkbox" id="Capacidad_uso_2021" checked>
-            <label for="Capacidad_uso_2021">Capacidad_uso_2021</label>
-        </div>
-        <div>
-            <input type="checkbox" id="conflictos_apt_uso" checked>
-            <label for="conflictos_apt_uso">conflictos_apt_uso</label>
-        </div>
-        <div>
-            <input type="checkbox" id="Parroquia_Molleturo" checked>
-            <label for="Parroquia_Molleturo">Parroquia_Molleturo</label>
-        </div>
-        <div>
-            <input type="checkbox" id="Sectores_2010" checked>
-            <label for="Sectores_2010">Sectores_2010</label>
-        </div>
-        <div>
-            <input type="checkbox" id="Sectores_2022" checked>
-            <label for="Sectores_2022">Sectores_2022</label>
-        </div>
-        <div>
-            <input type="checkbox" id="Uso_2015" checked>
-            <label for="Uso_2015">Uso_2015</label>
-        </div>
-        <div>
-            <input type="checkbox" id="Zae_2014" checked>
-            <label for="Zae_2014">Zae_2014</label>
-        </div>
-        <div>
-            <input type="checkbox" id="Zae_2020" checked>
-            <label for="Zae_2020">Zae_2020</label>
-        </div>
+  <!-- Top bar -->
+  <header class="topbar">
+    <h1>Geovisor Agrícola de la Parroquia de Molleturo</h1>
+    <div class="basemap-select">
+      <label for="basemap">Mapa base:</label>
+      <select id="basemap">
+        <option value="carto">Carto Positron</option>
+        <option value="osm">OpenStreetMap</option>
+        <option value="esri">Esri World Imagery</option>
+        <option value="toner">Stamen Toner Lite</option>
+      </select>
     </div>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="script.js"></script>
+  </header>
+
+  <!-- Map + side panel -->
+  <main>
+    <aside class="panel">
+      <div class="panel-section">
+        <h3>Capas</h3>
+        <div id="layerList" class="layer-list"></div>
+      </div>
+
+      <div class="panel-section">
+        <h3>Leyenda</h3>
+        <div id="legend" class="legend"></div>
+      </div>
+
+      <div class="panel-section">
+        <h3>Info</h3>
+        <p>Pasa el cursor o haz click en el mapa para ver atributos.</p>
+      </div>
+    </aside>
+
+    <div id="map"></div>
+  </main>
+
+  <footer class="footer">
+    <span>© DPI – MinEduc | Datos: INEC / Elaboración propia</span>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
+
