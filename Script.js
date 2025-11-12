@@ -19,9 +19,27 @@ function loadGeoJSON(url, layerName) {
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            layers[layerName] = L.geoJSON(data).addTo(map);
+            layers[layerName] = L.geoJSON(data, {
+                style: function (feature) {
+                    return {
+                        color: getRandomColor(),
+                        weight: 2,
+                        fillOpacity: 0.7
+                    };
+                }
+            }).addTo(map);
             controlLayer();
         });
+}
+
+// Función para generar un color aleatorio
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }
 
 // Cargar las capas GeoJSON
