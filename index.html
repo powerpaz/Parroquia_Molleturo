@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Geovisor Agrícola de la Parroquia de Molleturo</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Top bar -->
+  <header class="topbar">
+    <h1>Geovisor Agrícola de la Parroquia de Molleturo</h1>
+    <div class="basemap-select">
+      <label for="basemap">Mapa base:</label>
+      <select id="basemap">
+        <option value="carto">Carto Positron</option>
+        <option value="osm">OpenStreetMap</option>
+        <option value="esri">Esri World Imagery</option>
+        <option value="toner">Stamen Toner Lite</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- Map + side panel -->
+  <main>
+    <aside class="panel">
+      <div class="panel-section">
+        <h3>Capas</h3>
+        <div id="layerList" class="layer-list"></div>
+      </div>
+
+      <div class="panel-section">
+        <h3>Leyenda</h3>
+        <div id="legend" class="legend"></div>
+      </div>
+
+      <div class="panel-section">
+        <h3>Info</h3>
+        <p>Pasa el cursor o haz click en el mapa para ver atributos.</p>
+      </div>
+    </aside>
+
+    <div id="map"></div>
+  </main>
+
+  <footer class="footer">
+    <span>© Elaborado por Geopaz_Eguez&Pazmino</span>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
+
