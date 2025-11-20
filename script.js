@@ -1,20 +1,19 @@
 /* =========================================================
-   Geovisor Agrícola – Parroquia Molleturo
-   Estética Mapbox + Código Reparado + UI Limpia
+   Geovisor Agrícola – estilo MAPBOX Light (sin API keys)
 ========================================================= */
 
 /* =========================================================
-   1) MAPAS BASE (Mapbox-like, sin API)
+   MAPAS BASE (Mapbox-like, 100% gratuitos)
 ========================================================= */
 const basemaps = {
-  stadiamaps: L.tileLayer(
-    "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png",
-    { attribution: "&copy; Stadia Maps & OSM" }
+  voyager: L.tileLayer(
+    "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+    { attribution: "&copy; CARTO & OSM" }
   ),
 
-  carto: L.tileLayer(
-    "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-    { attribution: "&copy; OSM & CARTO" }
+  positron: L.tileLayer(
+    "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+    { attribution: "&copy; CARTO & OSM" }
   ),
 
   osm: L.tileLayer(
@@ -25,24 +24,19 @@ const basemaps = {
   esri: L.tileLayer(
     "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     { attribution: "&copy; Esri" }
-  ),
-
-  toner: L.tileLayer(
-    "https://stamen-tiles.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png",
-    { attribution: "&copy; Stamen" }
   )
 };
 
 /* =========================================================
-   2) INICIAR MAPA
+   INICIAR MAPA
 ========================================================= */
 const map = L.map("map", {
   center: [-2.62, -79.46],
   zoom: 12,
-  layers: [basemaps.stadiamaps]
+  layers: [basemaps.voyager] // Mapbox-like
 });
 
-// Cambiar mapas base
+// Selector
 document.getElementById("basemap").addEventListener("change", e => {
   const selected = e.target.value;
   Object.values(basemaps).forEach(b => map.removeLayer(b));
@@ -50,18 +44,17 @@ document.getElementById("basemap").addEventListener("change", e => {
 });
 
 /* =========================================================
-   3) PANES
+   PANES
 ========================================================= */
 map.createPane("pane_limites").style.zIndex = 400;
 map.createPane("pane_tematica").style.zIndex = 500;
 map.createPane("pane_puntos").style.zIndex = 600;
 
 /* =========================================================
-   4) CAPAS (ARCHIVOS REALES DE TU REPO)
+   CAPAS REALES
 ========================================================= */
 const layersConfig = [
 
-  // ---------- Límite parroquial ----------
   {
     id: "Molleturo",
     label: "Límite Parroquial",
@@ -79,8 +72,8 @@ const layersConfig = [
 
       l.bindPopup(`<b>Parroquia:</b> ${nombre}`);
 
-      const center = l.getBounds().getCenter();
-      L.marker(center, {
+      const c = l.getBounds().getCenter();
+      L.marker(c, {
         icon: L.divIcon({
           className: "label-text",
           html: nombre
@@ -89,7 +82,6 @@ const layersConfig = [
     }
   },
 
-  // ---------- Comunidades ----------
   {
     id: "Comunidades",
     label: "Comunidades",
@@ -98,10 +90,10 @@ const layersConfig = [
 
     pointToLayer: (f, latlng) =>
       L.circleMarker(latlng, {
-        radius: 6,
-        color: "#2563eb",
+        radius: 4,
+        color: "#1d4ed8",
         fillColor: "#3b82f6",
-        fillOpacity: 0.9,
+        fillOpacity: 0.85,
         weight: 1
       }),
 
@@ -123,7 +115,6 @@ const layersConfig = [
     }
   },
 
-  // ---------- ZAE 2020 ----------
   {
     id: "ZAE2020",
     label: "ZAE 2020",
@@ -143,7 +134,7 @@ const layersConfig = [
 ];
 
 /* =========================================================
-   5) PANEL DE CAPAS
+   PANEL LATERAL
 ========================================================= */
 const layerStore = new Map();
 const layerListEl = document.getElementById("layerList");
@@ -167,11 +158,11 @@ layersConfig.forEach(cfg => {
 });
 
 /* =========================================================
-   6) ACTIVAR / DESACTIVAR CAPAS
+   ACTIVAR / DESACTIVAR
 ========================================================= */
 layerListEl.addEventListener("change", async e => {
   const id = e.target.dataset.layer;
-  const cfg = layersConfig.find(c => c.id === id);
+  const cfg = layersConfig.find(x => x.id === id);
   if (!cfg) return;
 
   if (e.target.checked) {
@@ -194,15 +185,14 @@ layerListEl.addEventListener("change", async e => {
 });
 
 /* =========================================================
-   7) AUTO-CARGA LÍMITE PARROQUIAL
+   AUTO CARGAR MOLLETURO
 ========================================================= */
 (async () => {
-  const chk = document.getElementById("chk_Molleturo");
-  chk.checked = true;
-  chk.dispatchEvent(new Event("change"));
+  document.getElementById("chk_Molleturo").checked = true;
+  document.getElementById("chk_Molleturo").dispatchEvent(new Event("change"));
 
   setTimeout(() => {
-    const layer = layerStore.get("Molleturo");
-    if (layer) map.fitBounds(layer.getBounds(), { padding: [40, 40] });
+    const lyr = layerStore.get("Molleturo");
+    if (lyr) map.fitBounds(lyr.getBounds(), { padding: [40, 40] });
   }, 700);
 })();
