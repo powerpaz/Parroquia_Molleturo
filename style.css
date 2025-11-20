@@ -27,8 +27,15 @@ main {
   padding: 10px 20px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;   /* importante para título + logos en columna */
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+/* Contenedor título + logos */
+.topbar-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .topbar h1 {
@@ -38,7 +45,28 @@ main {
   color: #0f172a;
 }
 
+/* Tira de logos */
+.logo-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.logo-strip img {
+  height: 34px;          /* ajusta si los quieres más grandes/pequeños */
+  width: auto;
+  object-fit: contain;
+}
+
 /* Select estilo Mapbox */
+.basemap-select {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+
 .basemap-select select {
   padding: 6px 10px;
   border-radius: 6px;
