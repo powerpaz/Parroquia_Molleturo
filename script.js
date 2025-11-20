@@ -1,6 +1,6 @@
 /* =========================================================
    Geovisor Agrícola – Estética MAPBOX Light
-   Versión con Cacao rayado y sin ZAE en el panel
+   Solo Límite, Comunidades y Cacao (rayado)
 ========================================================= */
 
 /* =========================================================
@@ -42,7 +42,7 @@ document.getElementById("basemap").addEventListener("change", e => {
 });
 
 /* =========================================================
-   PATRÓN RAYADO PARA CACAO (con fallback)
+   PATRÓN RAYADO PARA CACAO (con fallback si no carga plugin)
 ========================================================= */
 let cacaoPattern = null;
 try {
@@ -67,7 +67,7 @@ map.createPane("pane_tematica").style.zIndex = 500;
 map.createPane("pane_puntos").style.zIndex = 600;
 
 /* =========================================================
-   DEFINICIÓN DE CAPAS
+   DEFINICIÓN DE CAPAS (SOLO 3)
 ========================================================= */
 const layersConfig = [
 
@@ -153,117 +153,12 @@ const layersConfig = [
         <b>Área:</b> ${areaTxt}
       `);
     }
-  },
-
-  // ----- Conflictos -----
-  {
-    id: "Conflictos",
-    label: "Conflictos aptitud de uso",
-    url: "conflictos_apt_usoJSON.geojson",
-    pane: "pane_tematica",
-    style: {
-      color: "#dc2626",
-      weight: 1,
-      fillOpacity: 0.25
-    },
-    onEachFeature: (f, l) => {
-      const p = f.properties || {};
-      const nombre = p.label ?? p.simbolgia ?? "Conflicto";
-      l.bindPopup(`<b>Conflicto:</b> ${nombre}`);
-    }
-  },
-
-  // ----- Sectores 2010 -----
-  {
-    id: "Sectores2010",
-    label: "Sectores 2010",
-    url: "Sectores_2010JSON.geojson",
-    pane: "pane_tematica",
-    style: {
-      color: "#4b5563",
-      weight: 0.8,
-      fillOpacity: 0.12
-    },
-    onEachFeature: (f, l) => {
-      l.bindPopup(`<b>Sector 2010</b>`);
-    }
-  },
-
-  // ----- Sectores 2022 -----
-  {
-    id: "Sectores2022",
-    label: "Sectores 2022",
-    url: "Sectores_2022JSON.geojson",
-    pane: "pane_tematica",
-    style: {
-      color: "#7c3aed",
-      weight: 0.8,
-      fillOpacity: 0.12
-    },
-    onEachFeature: (f, l) => {
-      l.bindPopup(`<b>Sector 2022</b>`);
-    }
-  },
-
-  // ----- Uso 2015 -----
-  {
-    id: "Uso2015",
-    label: "Uso del suelo 2015",
-    url: "Uso_2015JSON.geojson",
-    pane: "pane_tematica",
-    style: {
-      color: "#f97316",
-      weight: 0.8,
-      fillOpacity: 0.20
-    },
-    onEachFeature: (f, l) => {
-      const p = f.properties || {};
-      const nombre = p.label ?? p.uso ?? "Uso";
-      l.bindPopup(`<b>Uso 2015:</b> ${nombre}`);
-    }
-  },
-
-  // ----- Capacidad de uso 2021 -----
-  {
-    id: "Capacidad2021",
-    label: "Capacidad de uso 2021",
-    url: "Capacidad_uso_2021JSON.json",
-    pane: "pane_tematica",
-    style: {
-      color: "#16a34a",
-      weight: 0.8,
-      fillOpacity: 0.20
-    },
-    onEachFeature: (f, l) => {
-      const p = f.properties || {};
-      const nombre = p.label ?? p.simbolgia ?? "Capacidad";
-      l.bindPopup(`<b>Capacidad 2021:</b> ${nombre}`);
-    }
-  },
-
-  // ----- Aptitud Agrícola -----
-  {
-    id: "Aptitud",
-    label: "Aptitud agrícola",
-    url: "ActitudAgricolaJSON.json",
-    pane: "pane_tematica",
-    style: {
-      color: "#22c55e",
-      weight: 0.8,
-      fillOpacity: 0.20
-    },
-    onEachFeature: (f, l) => {
-      const p = f.properties || {};
-      const nombre = p.label ?? p.simbolgia ?? "Aptitud agrícola";
-      l.bindPopup(`<b>Aptitud agrícola:</b> ${nombre}`);
-    }
   }
 
-  // 🔹 ZAE2014 y ZAE2020 eliminadas del panel (no están en layersConfig)
 ];
 
 /* =========================================================
-   PANEL LATERAL
+   PANEL LATERAL (check solo para esas 3 capas)
 ========================================================= */
 const layerStore = new Map();
 const layerListEl = document.getElementById("layerList");
@@ -298,7 +193,7 @@ layerListEl.addEventListener("change", async e => {
     const data = await fetch(cfg.url).then(r => r.json());
     const layer = L.geoJSON(data, {
       pane: cfg.pane,
-      style: cfg.style,
+      style: typeof cfg.style === "function" ? cfg.style : cfg.style,
       pointToLayer: cfg.pointToLayer,
       onEachFeature: cfg.onEachFeature
     });
@@ -316,13 +211,7 @@ layerListEl.addEventListener("change", async e => {
 const autoOnIds = [
   "Molleturo",
   "Comunidades",
-  "Cacao",
-  "Conflictos",
-  "Sectores2010",
-  "Sectores2022",
-  "Uso2015",
-  "Capacidad2021",
-  "Aptitud"
+  "Cacao"
 ];
 
 (() => {
