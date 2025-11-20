@@ -1,6 +1,6 @@
 /* =========================================================
    Geovisor Agrícola – Estética MAPBOX Light
-   Versión con puntos mejorados y capa de cacao
+   Versión con todas las capas y Cacao rayado
 ========================================================= */
 
 /* =========================================================
@@ -34,12 +34,23 @@ const map = L.map("map", {
   layers: [basemaps.voyager]
 });
 
-/* Cambiar mapas base */
-document.getElementById("basemap").addEventListener("change", (e) => {
+/* Selector de mapa base */
+document.getElementById("basemap").addEventListener("change", e => {
   const selected = e.target.value;
-  Object.values(basemaps).forEach((b) => map.removeLayer(b));
+  Object.values(basemaps).forEach(b => map.removeLayer(b));
   basemaps[selected].addTo(map);
 });
+
+/* =========================================================
+   PATRÓN RAYADO PARA CACAO
+========================================================= */
+const cacaoPattern = new L.StripePattern({
+  weight: 2,
+  spaceWeight: 4,
+  color: "#000000",
+  opacity: 0.7,
+  angle: 45
+}).addTo(map);
 
 /* =========================================================
    PANES
@@ -49,10 +60,11 @@ map.createPane("pane_tematica").style.zIndex = 500;
 map.createPane("pane_puntos").style.zIndex = 600;
 
 /* =========================================================
-   CAPAS
+   DEFINICIÓN DE CAPAS
 ========================================================= */
 const layersConfig = [
-  // ---------- Límite parroquial ----------
+
+  // ----- Límite parroquial -----
   {
     id: "Molleturo",
     label: "Límite Parroquial",
@@ -61,7 +73,7 @@ const layersConfig = [
     style: {
       color: "#0284c7",
       weight: 2,
-      fillOpacity: 0,
+      fillOpacity: 0
     },
     onEachFeature: (f, l) => {
       const nombre = f.properties?.Nombre ?? "Molleturo";
@@ -70,13 +82,13 @@ const layersConfig = [
       L.marker(c, {
         icon: L.divIcon({
           className: "label-text",
-          html: nombre,
-        }),
+          html: nombre
+        })
       }).addTo(map);
-    },
+    }
   },
 
-  // ---------- Comunidades / Puntos de estudio ----------
+  // ----- Comunidades / Puntos de estudio -----
   {
     id: "Comunidades",
     label: "Comunidades / Puntos de estudio",
@@ -85,10 +97,10 @@ const layersConfig = [
     pointToLayer: (f, latlng) =>
       L.circleMarker(latlng, {
         radius: 6,
-        color: "#0f172a",      // borde oscuro
+        color: "#0f172a",
         weight: 1.5,
-        fillColor: "#22c55e",  // verde tipo Mapbox
-        fillOpacity: 0.95,
+        fillColor: "#22c55e",
+        fillOpacity: 0.95
       }),
     onEachFeature: (f, l) => {
       const p = f.properties || {};
@@ -98,41 +110,23 @@ const layersConfig = [
         <b>Comunidad:</b> ${nombre}<br>
         <b>Población estudio:</b> ${pob}
       `);
-      // No añadimos labels extra para no saturar el mapa.
-    },
+    }
   },
 
-  // ---------- ZAE 2020 ----------
-  {
-    id: "ZAE2020",
-    label: "ZAE 2020",
-    url: "Zae_2020JSON.geojson",
-    pane: "pane_tematica",
-    style: {
-      color: "#0ea5e9",
-      weight: 1,
-      fillOpacity: 0.25,
-    },
-    onEachFeature: (f, l) => {
-      l.bindPopup(`<b>ZAE:</b> ${f.properties?.CLASIFICAC ?? "s/i"}`);
-    },
-  },
-
-  // ---------- Áreas de cultivo de cacao ----------
+  // ----- Cacao Areas de Cultivo (rayado) -----
   {
     id: "Cacao",
     label: "Áreas de cultivo de cacao",
     url: "Cacao Areas de Cultivo.geojson",
     pane: "pane_tematica",
     style: {
-      color: "#047857",        // borde verde oscuro
+      color: "#047857",
       weight: 1,
-      fillColor: "#22c55e",    // relleno verde brillante
-      fillOpacity: 0.45,
+      fillPattern: cacaoPattern
     },
     onEachFeature: (f, l) => {
       const p = f.properties || {};
-      const label = p.label ?? p.niv5 ?? "Cacao";
+      const label = p.label ?? "Cacao";
       let areaTxt = "s/i";
       if (typeof p.sce === "number") {
         areaTxt = `${p.sce.toFixed(2)} ${p.usce || ""}`;
@@ -143,8 +137,149 @@ const layersConfig = [
         <b>Uso:</b> ${p.uso ?? "s/i"}<br>
         <b>Área:</b> ${areaTxt}
       `);
-    },
+    }
   },
+
+  // ----- Conflictos -----
+  {
+    id: "Conflictos",
+    label: "Conflictos aptitud de uso",
+    url: "conflictos_apt_usoJSON.geojson",
+    pane: "pane_tematica",
+    style: {
+      color: "#dc2626",
+      weight: 1,
+      fillOpacity: 0.25
+    },
+    onEachFeature: (f, l) => {
+      const p = f.properties || {};
+      const nombre = p.label ?? p.simbolgia ?? "Conflicto";
+      l.bindPopup(`<b>Conflicto:</b> ${nombre}`);
+    }
+  },
+
+  // ----- Sectores 2010 -----
+  {
+    id: "Sectores2010",
+    label: "Sectores 2010",
+    url: "Sectores_2010JSON.geojson",
+    pane: "pane_tematica",
+    style: {
+      color: "#4b5563",
+      weight: 0.8,
+      fillOpacity: 0.12
+    },
+    onEachFeature: (f, l) => {
+      l.bindPopup(`<b>Sector 2010</b>`);
+    }
+  },
+
+  // ----- Sectores 2022 -----
+  {
+    id: "Sectores2022",
+    label: "Sectores 2022",
+    url: "Sectores_2022JSON.geojson",
+    pane: "pane_tematica",
+    style: {
+      color: "#7c3aed",
+      weight: 0.8,
+      fillOpacity: 0.12
+    },
+    onEachFeature: (f, l) => {
+      l.bindPopup(`<b>Sector 2022</b>`);
+    }
+  },
+
+  // ----- Uso 2015 -----
+  {
+    id: "Uso2015",
+    label: "Uso del suelo 2015",
+    url: "Uso_2015JSON.geojson",
+    pane: "pane_tematica",
+    style: {
+      color: "#f97316",
+      weight: 0.8,
+      fillOpacity: 0.20
+    },
+    onEachFeature: (f, l) => {
+      const p = f.properties || {};
+      const nombre = p.label ?? p.uso ?? "Uso";
+      l.bindPopup(`<b>Uso 2015:</b> ${nombre}`);
+    }
+  },
+
+  // ----- Capacidad de uso 2021 -----
+  {
+    id: "Capacidad2021",
+    label: "Capacidad de uso 2021",
+    url: "Capacidad_uso_2021JSON.json",
+    pane: "pane_tematica",
+    style: {
+      color: "#16a34a",
+      weight: 0.8,
+      fillOpacity: 0.20
+    },
+    onEachFeature: (f, l) => {
+      const p = f.properties || {};
+      const nombre = p.label ?? p.simbolgia ?? "Capacidad";
+      l.bindPopup(`<b>Capacidad 2021:</b> ${nombre}`);
+    }
+  },
+
+  // ----- Aptitud Agrícola -----
+  {
+    id: "Aptitud",
+    label: "Aptitud agrícola",
+    url: "ActitudAgricolaJSON.json",
+    pane: "pane_tematica",
+    style: {
+      color: "#22c55e",
+      weight: 0.8,
+      fillOpacity: 0.20
+    },
+    onEachFeature: (f, l) => {
+      const p = f.properties || {};
+      const nombre = p.label ?? p.simbolgia ?? "Aptitud agrícola";
+      l.bindPopup(`<b>Aptitud agrícola:</b> ${nombre}`);
+    }
+  },
+
+  // ----- ZAE 2014 -----
+  {
+    id: "ZAE2014",
+    label: "ZAE 2014",
+    url: "Zae_2014JSON.geojson",
+    pane: "pane_tematica",
+    style: {
+      color: "#e11d48",
+      weight: 0.8,
+      fillOpacity: 0.20
+    },
+    onEachFeature: (f, l) => {
+      const p = f.properties || {};
+      const nombre = p.CLASIFICAC ?? p.label ?? "ZAE 2014";
+      l.bindPopup(`<b>ZAE 2014:</b> ${nombre}`);
+    }
+  },
+
+  // ----- ZAE 2020 -----
+  {
+    id: "ZAE2020",
+    label: "ZAE 2020",
+    url: "Zae_2020JSON.geojson",
+    pane: "pane_tematica",
+    style: {
+      color: "#0ea5e9",
+      weight: 0.8,
+      fillOpacity: 0.20
+    },
+    onEachFeature: (f, l) => {
+      const p = f.properties || {};
+      const nombre = p.CLASIFICAC ?? p.label ?? "ZAE 2020";
+      l.bindPopup(`<b>ZAE 2020:</b> ${nombre}`);
+    }
+  }
+
 ];
 
 /* =========================================================
@@ -153,7 +288,7 @@ const layersConfig = [
 const layerStore = new Map();
 const layerListEl = document.getElementById("layerList");
 
-layersConfig.forEach((cfg) => {
+layersConfig.forEach(cfg => {
   const div = document.createElement("div");
   div.className = "layer-item";
 
@@ -174,18 +309,18 @@ layersConfig.forEach((cfg) => {
 /* =========================================================
    ACTIVAR / DESACTIVAR CAPAS
 ========================================================= */
-layerListEl.addEventListener("change", async (e) => {
+layerListEl.addEventListener("change", async e => {
   const id = e.target.dataset.layer;
-  const cfg = layersConfig.find((c) => c.id === id);
+  const cfg = layersConfig.find(c => c.id === id);
   if (!cfg) return;
 
   if (e.target.checked) {
-    const data = await fetch(cfg.url).then((r) => r.json());
+    const data = await fetch(cfg.url).then(r => r.json());
     const layer = L.geoJSON(data, {
       pane: cfg.pane,
       style: cfg.style,
       pointToLayer: cfg.pointToLayer,
-      onEachFeature: cfg.onEachFeature,
+      onEachFeature: cfg.onEachFeature
     });
     layer.addTo(map);
     layerStore.set(id, layer);
@@ -196,17 +331,35 @@ layerListEl.addEventListener("change", async (e) => {
 });
 
 /* =========================================================
-   CARGA AUTOMÁTICA DEL LÍMITE
+   ARRANQUE: CAPAS PRENDIDAS POR DEFECTO
 ========================================================= */
+
+const autoOnIds = [
+  "Molleturo",
+  "Comunidades",
+  "Cacao",
+  "Conflictos",
+  "Sectores2010",
+  "Sectores2022",
+  "Uso2015",
+  "Capacidad2021",
+  "Aptitud",
+  "ZAE2014",
+  "ZAE2020"
+];
+
 (() => {
-  const chk = document.getElementById("chk_Molleturo");
-  if (chk) {
-    chk.checked = true;
-    chk.dispatchEvent(new Event("change"));
-  }
+  autoOnIds.forEach(id => {
+    const chk = document.getElementById("chk_" + id);
+    if (chk) {
+      chk.checked = true;
+      chk.dispatchEvent(new Event("change"));
+    }
+  });
+
+  // Ajustar vista al límite parroquial
   setTimeout(() => {
     const lyr = layerStore.get("Molleturo");
     if (lyr) map.fitBounds(lyr.getBounds(), { padding: [50, 50] });
-  }, 700);
+  }, 800);
 })();
-
