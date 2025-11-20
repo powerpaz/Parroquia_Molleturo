@@ -1,8 +1,7 @@
 /* =========================================================
-   Estética tipo MAPBOX Light / Voyager
+   Estética tipo MAPBOX (Voyager/Positron)
 ========================================================= */
 
-/* ===== GENERAL ===== */
 html, body {
   margin: 0;
   padding: 0;
@@ -24,12 +23,12 @@ main {
 /* ===== TOP BAR ===== */
 .topbar {
   background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #d7dbe2;
   padding: 10px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
 .topbar h1 {
@@ -47,13 +46,10 @@ main {
   background: #ffffff;
   font-size: 14px;
   color: #1e293b;
+  outline: none;
 }
 
-.basemap-select select:hover {
-  border-color: #94a3b8;
-}
-
-/* ===== PANEL LATERAL ===== */
+/* ===== PANEL ===== */
 .panel {
   width: 270px;
   background: #ffffff;
@@ -64,19 +60,16 @@ main {
 }
 
 .panel-section h3 {
-  margin: 0 0 10px;
+  margin-bottom: 8px;
   font-size: 15px;
   font-weight: 600;
   color: #0f172a;
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 4px;
 }
 
-/* Lista de capas */
 .layer-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   padding: 6px 0;
 }
 
@@ -86,30 +79,11 @@ main {
   accent-color: #3b82f6;
 }
 
-/* ===== LEYENDA ===== */
-.legend {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  padding: 12px;
-  border-radius: 6px;
-  font-size: 13px;
-}
-
-/* ===== FOOTER ===== */
-.footer {
-  text-align: center;
-  padding: 10px;
-  background: #ffffff;
-  border-top: 1px solid #e2e8f0;
-  color: #64748b;
-  font-size: 13px;
-}
-
 /* ===== LABELS estilo Mapbox ===== */
 .label-text {
+  font-size: 10.5px;
   font-weight: 600;
   color: #0f172a;
-  font-size: 11px;
   background: rgba(255,255,255,0.85);
   padding: 1px 4px;
   border-radius: 3px;
@@ -126,4 +100,12 @@ main {
 .leaflet-popup-content {
   color: #0f172a;
   font-size: 13px;
+}
+
+.footer {
+  text-align: center;
+  padding: 10px;
+  background: #ffffff;
+  color: #64748b;
+  border-top: 1px solid #e2e8f0;
 }
