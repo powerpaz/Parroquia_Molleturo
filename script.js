@@ -1,6 +1,6 @@
 /* =========================================================
    Geovisor Agrícola – Estética MAPBOX Light
-   Versión Final Optimizada
+   Versión con puntos mejorados y capa de cacao
 ========================================================= */
 
 /* =========================================================
@@ -35,9 +35,9 @@ const map = L.map("map", {
 });
 
 /* Cambiar mapas base */
-document.getElementById("basemap").addEventListener("change", e => {
+document.getElementById("basemap").addEventListener("change", (e) => {
   const selected = e.target.value;
-  Object.values(basemaps).forEach(b => map.removeLayer(b));
+  Object.values(basemaps).forEach((b) => map.removeLayer(b));
   basemaps[selected].addTo(map);
 });
 
@@ -52,83 +52,99 @@ map.createPane("pane_puntos").style.zIndex = 600;
    CAPAS
 ========================================================= */
 const layersConfig = [
-
+  // ---------- Límite parroquial ----------
   {
     id: "Molleturo",
     label: "Límite Parroquial",
     url: "Parroquia_MolleturoJSON.geojson",
     pane: "pane_limites",
-
     style: {
       color: "#0284c7",
       weight: 2,
-      fillOpacity: 0
+      fillOpacity: 0,
     },
-
     onEachFeature: (f, l) => {
       const nombre = f.properties?.Nombre ?? "Molleturo";
-
       l.bindPopup(`<b>Parroquia:</b> ${nombre}`);
-
       const c = l.getBounds().getCenter();
       L.marker(c, {
         icon: L.divIcon({
           className: "label-text",
-          html: nombre
-        })
+          html: nombre,
+        }),
       }).addTo(map);
-    }
+    },
   },
 
+  // ---------- Comunidades / Puntos de estudio ----------
   {
     id: "Comunidades",
-    label: "Comunidades",
+    label: "Comunidades / Puntos de estudio",
     url: "Puntos_de_Estudio.geojson",
     pane: "pane_puntos",
-
     pointToLayer: (f, latlng) =>
       L.circleMarker(latlng, {
-        radius: 4,
-        color: "#1d4ed8",
-        fillColor: "#3b82f6",
-        fillOpacity: 0.85,
-        weight: 1
+        radius: 6,
+        color: "#0f172a",      // borde oscuro
+        weight: 1.5,
+        fillColor: "#22c55e",  // verde tipo Mapbox
+        fillOpacity: 0.95,
       }),
-
     onEachFeature: (f, l) => {
-      const p = f.properties;
-      const nombre = p?.Nombre ?? p?.nam ?? "Sin nombre";
-
+      const p = f.properties || {};
+      const nombre = p.Nombre ?? p.nam ?? "Sin nombre";
+      const pob = p.Pob_estudi ?? "s/i";
       l.bindPopup(`
         <b>Comunidad:</b> ${nombre}<br>
-        <b>Población:</b> ${p?.Pob_estudi ?? "s/i"}
+        <b>Población estudio:</b> ${pob}
       `);
-
-      L.marker(l.getLatLng(), {
-        icon: L.divIcon({
-          className: "label-text",
-          html: nombre
-        })
-      }).addTo(map);
-    }
+      // No añadimos labels extra para no saturar el mapa.
+    },
   },
 
+  // ---------- ZAE 2020 ----------
   {
     id: "ZAE2020",
     label: "ZAE 2020",
     url: "Zae_2020JSON.geojson",
     pane: "pane_tematica",
-
     style: {
       color: "#0ea5e9",
       weight: 1,
-      fillOpacity: 0.25
+      fillOpacity: 0.25,
     },
-
     onEachFeature: (f, l) => {
       l.bindPopup(`<b>ZAE:</b> ${f.properties?.CLASIFICAC ?? "s/i"}`);
-    }
-  }
+    },
+  },
+
+  // ---------- Áreas de cultivo de cacao ----------
+  {
+    id: "Cacao",
+    label: "Áreas de cultivo de cacao",
+    url: "Cacao Areas de Cultivo.geojson",
+    pane: "pane_tematica",
+    style: {
+      color: "#047857",        // borde verde oscuro
+      weight: 1,
+      fillColor: "#22c55e",    // relleno verde brillante
+      fillOpacity: 0.45,
+    },
+    onEachFeature: (f, l) => {
+      const p = f.properties || {};
+      const label = p.label ?? p.niv5 ?? "Cacao";
+      let areaTxt = "s/i";
+      if (typeof p.sce === "number") {
+        areaTxt = `${p.sce.toFixed(2)} ${p.usce || ""}`;
+      }
+      l.bindPopup(`
+        <b>Etiqueta:</b> ${label}<br>
+        <b>Tamaño de parcela:</b> ${p.tap ?? "s/i"}<br>
+        <b>Uso:</b> ${p.uso ?? "s/i"}<br>
+        <b>Área:</b> ${areaTxt}
+      `);
+    },
+  },
 ];
 
 /* =========================================================
@@ -137,7 +153,7 @@ const layersConfig = [
 const layerStore = new Map();
 const layerListEl = document.getElementById("layerList");
 
-layersConfig.forEach(cfg => {
+layersConfig.forEach((cfg) => {
   const div = document.createElement("div");
   div.className = "layer-item";
 
@@ -158,24 +174,21 @@ layersConfig.forEach(cfg => {
 /* =========================================================
    ACTIVAR / DESACTIVAR CAPAS
 ========================================================= */
-layerListEl.addEventListener("change", async e => {
+layerListEl.addEventListener("change", async (e) => {
   const id = e.target.dataset.layer;
-  const cfg = layersConfig.find(c => c.id === id);
+  const cfg = layersConfig.find((c) => c.id === id);
   if (!cfg) return;
 
   if (e.target.checked) {
-    const data = await fetch(cfg.url).then(r => r.json());
-
+    const data = await fetch(cfg.url).then((r) => r.json());
     const layer = L.geoJSON(data, {
       pane: cfg.pane,
       style: cfg.style,
       pointToLayer: cfg.pointToLayer,
-      onEachFeature: cfg.onEachFeature
+      onEachFeature: cfg.onEachFeature,
     });
-
     layer.addTo(map);
     layerStore.set(id, layer);
-
   } else {
     const lyr = layerStore.get(id);
     if (lyr) map.removeLayer(lyr);
@@ -185,11 +198,12 @@ layerListEl.addEventListener("change", async e => {
 /* =========================================================
    CARGA AUTOMÁTICA DEL LÍMITE
 ========================================================= */
-(async () => {
+(() => {
   const chk = document.getElementById("chk_Molleturo");
-  chk.checked = true;
-  chk.dispatchEvent(new Event("change"));
-
+  if (chk) {
+    chk.checked = true;
+    chk.dispatchEvent(new Event("change"));
+  }
   setTimeout(() => {
     const lyr = layerStore.get("Molleturo");
     if (lyr) map.fitBounds(lyr.getBounds(), { padding: [50, 50] });
