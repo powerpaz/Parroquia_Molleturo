@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Geovisor Agrícola de la Parroquia de Molleturo</title>
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+
+  <!-- Estilos propios -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <!-- Logos + título -->
+    <div class="topbar-main">
+      <div class="logo-strip">
+        <img src="logo_unibonn.png" alt="Universität Bonn" />
+        <img src="logo_zef.png" alt="ZEF - Center for Development Research" />
+        <img src="logo_rlc.png" alt="Right Livelihood College" />
+      </div>
+
+      <h1 class="app-title">
+        THE COCOA SOCIETY: NAVIGATING AGRARIA EXTRACTIVISM AND FOOD SOVEREIGNTY
+        IN MOLLETURO-AZUAY, ECUADOR<br />
+        LA SOCIEDAD DEL CACAO: NAVEGANDO EL EXTRACTIVISMO AGRARIO Y LA SOBERANÍA
+        ALIMENTARIA EN MOLLETURO-AZUAY, ECUADOR
+      </h1>
+    </div>
+
+    <!-- Selector de mapa base -->
+    <div class="basemap-select">
+      <label for="basemap">Mapa base:</label>
+      <select id="basemap">
+        <option value="voyager">Mapbox Light (Voyager)</option>
+        <option value="positron">Carto Positron</option>
+        <option value="osm">OpenStreetMap</option>
+        <option value="esri">Esri World Imagery</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main>
+    <aside class="panel">
+      <div class="panel-section">
+        <h3>Capas</h3>
+        <div id="layerList" class="layer-list"></div>
+      </div>
+
+      <div class="panel-section">
+        <h3>Leyenda</h3>
+        <div id="legend" class="legend">
+          <p>Activa o desactiva las capas desde el panel superior.</p>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h3>Info</h3>
+        <p>Haz click sobre los elementos del mapa para ver sus atributos.</p>
+      </div>
+    </aside>
+
+    <div id="map"></div>
+  </main>
+
+  <footer class="footer">
+    © Geopaz_Eguez &amp; Pazmiño — 2025
+  </footer>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Plugin para patrones (rayado en Cacao) -->
+  <script src="https://unpkg.com/leaflet.pattern/dist/leaflet.pattern.js"></script>
+
+  <!-- Script principal -->
+  <script src="script.js"></script>
+</body>
+</html>
