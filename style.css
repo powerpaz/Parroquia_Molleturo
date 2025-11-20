@@ -23,40 +23,48 @@ main {
 /* ===== TOP BAR ===== */
 .topbar {
   background: #ffffff;
-  border-bottom: 1px solid #d7dbe2;
-  padding: 10px 20px;
+  border-bottom: 2px solid #0f172a; /* línea gráfica más marcada */
+  padding: 8px 20px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;   /* importante para título + logos en columna */
+  align-items: center;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  gap: 20px;
 }
 
-/* Contenedor título + logos */
-.topbar-left {
+/* Contenedor logos + título */
+.topbar-main {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.topbar h1 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #0f172a;
+  align-items: center;
+  gap: 16px;
+  min-width: 0; /* para que el título pueda hacer wrap */
 }
 
 /* Tira de logos */
 .logo-strip {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
   align-items: center;
 }
 
 .logo-strip img {
-  height: 34px;          /* ajusta si los quieres más grandes/pequeños */
+  height: 38px;   /* ajusta si lo quieres más grande/pequeño */
   width: auto;
   object-fit: contain;
+}
+
+/* Título al lado derecho de los logos */
+.app-title {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.25;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #003366;
+  text-align: left;
+  /* que pueda adaptarse a distintos anchos */
+  max-width: 900px;
 }
 
 /* Select estilo Mapbox */
@@ -64,7 +72,8 @@ main {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 14px;
+  font-size: 13px;
+  white-space: nowrap;
 }
 
 .basemap-select select {
@@ -72,7 +81,7 @@ main {
   border-radius: 6px;
   border: 1px solid #cbd5e1;
   background: #ffffff;
-  font-size: 14px;
+  font-size: 13px;
   color: #1e293b;
   outline: none;
 }
@@ -153,4 +162,25 @@ main {
 .leaflet-popup-content {
   color: #0f172a;
   font-size: 13px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .topbar-main {
+    width: 100%;
+  }
+
+  .app-title {
+    max-width: 100%;
+  }
+
+  main {
+    height: calc(100% - 100px);
+  }
 }
