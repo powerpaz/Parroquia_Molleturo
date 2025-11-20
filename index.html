@@ -3,10 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <title>Geovisor Agrícola de la Parroquia de Molleturo</title>
 
-  <!-- Leaflet CSS -->
+  <!-- Leaflet -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -16,38 +15,32 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <!-- TOP BAR -->
+  <!-- Barra superior -->
   <header class="topbar">
-    <!-- Logos + título -->
-    <div class="topbar-main">
-      <div class="logo-strip">
+    <div class="topbar-left">
+      <h1>Geovisor Agrícola de la Parroquia de Molleturo</h1>
+
+      <div class="topbar-logos">
+        <!-- Logos aliados -->
         <img src="logo_unibonn.png" alt="Universität Bonn" />
         <img src="logo_zef.png" alt="ZEF - Center for Development Research" />
         <img src="logo_rlc.png" alt="Right Livelihood College" />
+        <img src="logo_fiat_panis.png" alt="Foundation fiat panis" />
       </div>
-
-      <h1 class="app-title">
-        THE COCOA SOCIETY: NAVIGATING AGRARIA EXTRACTIVISM AND FOOD SOVEREIGNTY
-        IN MOLLETURO-AZUAY, ECUADOR<br />
-        LA SOCIEDAD DEL CACAO: NAVEGANDO EL EXTRACTIVISMO AGRARIO Y LA SOBERANÍA
-        ALIMENTARIA EN MOLLETURO-AZUAY, ECUADOR
-      </h1>
     </div>
 
-    <!-- Selector de mapa base -->
     <div class="basemap-select">
       <label for="basemap">Mapa base:</label>
       <select id="basemap">
-        <option value="voyager">Mapbox Light (Voyager)</option>
-        <option value="positron">Carto Positron</option>
+        <option value="voyager">Mapbox style (Voyager)</option>
+        <option value="positron">Mapbox Light style</option>
         <option value="osm">OpenStreetMap</option>
         <option value="esri">Esri World Imagery</option>
       </select>
     </div>
   </header>
 
-  <!-- CONTENIDO PRINCIPAL -->
+  <!-- Panel lateral + mapa -->
   <main>
     <aside class="panel">
       <div class="panel-section">
@@ -72,16 +65,16 @@
   </main>
 
   <footer class="footer">
-    © Geopaz_Eguez &amp; Pazmiño — 2025
+    <span>© Elaborado por Geopaz_Eguez&Pazmiño</span>
   </footer>
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <!-- Plugin para patrones (rayado en Cacao) -->
-  <script src="https://unpkg.com/leaflet.pattern/dist/leaflet.pattern.js"></script>
+  <!-- Plugin opcional para patrón rayado de cacao -->
+  <script src="https://unpkg.com/leaflet.pattern/leaflet.pattern.min.js"></script>
 
-  <!-- Script principal -->
+  <!-- Lógica del mapa -->
   <script src="script.js"></script>
 </body>
 </html>
