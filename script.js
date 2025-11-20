@@ -291,3 +291,10 @@ map.on('load', () => {
 map.on('tileerror', (e) => {
   console.warn('Error loading tile:', e);
 });
+
+// Efecto de carga suave
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.body.classList.add('loaded');
+  }, 100);
+});
