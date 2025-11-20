@@ -1,35 +1,9 @@
 /* =========================================================
-   Geovisor Agrícola – Molleturo (Leaflet)
-   - Capas con switches
-   - Selector de mapa base
-   - NUEVO: Provincias (provincias_simplificado.geojson)
-   - NUEVO: Puntos de Estudio (puntos_de_estudio.geojson)
+   Geovisor – Molleturo (Leaflet)
+   Capas base + capas temáticas + puntos de estudio
    ========================================================= */
 
-// ---------- 1) MAPA BASE ----------
-const basemaps = {
-  carto: L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OSM & CARTO'
-  }),
-  osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap'
-  }),
-  esri: L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Esri'
-  })
-};
-
-// ---------- MAPA PRINCIPAL ----------
-const map = L.map('map', {
-  center: [-2.88, -79.29],
-  zoom: 12,
-  layers: [basemaps.carto]
-});
-
-// ---------- SELECTOR DE BASEMAP ----------
-L.control.layers(basemaps, null, { position: 'topright' }).addTo(map);
-
-// ---------- 2) PANELES ----------
+// ---------- 1) PANELES ----------
 map.createPane('pane_limites');
 map.getPane('pane_limites').style.zIndex = 400;
 
@@ -39,7 +13,8 @@ map.getPane('pane_tematica').style.zIndex = 500;
 map.createPane('pane_puntos');
 map.getPane('pane_puntos').style.zIndex = 600;
 
-// ---------- 3) CONFIGURACIÓN DE CAPAS ----------
+
+// ---------- 2) CONFIGURACIÓN DE CAPAS ----------
 const layersConfig = [
 
   // --- LIMITE PARROQUIAL ---
@@ -49,7 +24,7 @@ const layersConfig = [
     url: 'Molleturo_Limite.geojson',
     pane: 'pane_limites',
     style: { color: '#0ea5e9', weight: 2, fillOpacity: 0 },
-    popup: p => `<b>Parroquia:</b> ${p.Nombre || 'Molleturo'}`
+    popup: p => `<b>Parroquia:</b> ${p.Nombre ?? 'Molleturo'}`
   },
 
   // --- COMUNIDADES ---
@@ -58,6 +33,7 @@ const layersConfig = [
     label: 'Comunidades',
     url: 'Comunidades.geojson',
     pane: 'pane_puntos',
+
     pointToLayer: (f, latlng) => L.circleMarker(latlng, {
       radius: 5,
       color: '#2563eb',
@@ -65,10 +41,11 @@ const layersConfig = [
       fillOpacity: 0.6,
       weight: 1
     }),
-    popup: p => `<b>Comunidad:</b> ${p.Nombre ?? 's/i'}`
+
+    popup: p => `<b>Comunidad:</b> ${p.Nombre ?? p.nam ?? 's/i'}`
   },
 
-  // --- ZONAS ---
+  // --- ZONAS AGRÍCOLAS ---
   {
     id: 'Zonas',
     label: 'Zonas agrícolas',
@@ -78,7 +55,7 @@ const layersConfig = [
     popup: p => `<b>Zona:</b> ${p.Nombre ?? 's/i'}`
   },
 
-  // --- ZAE ---
+  // --- ZAE 2020 ---
   {
     id: 'ZAE2020',
     label: 'ZAE 2020',
@@ -94,27 +71,31 @@ const layersConfig = [
   {
     id: 'Puntos_Estudio',
     label: 'Puntos de Estudio',
-    url: 'Puntos_de_Estudio.geojson',
+    url: 'Puntos_de_Estudio.geojson',        // ARCHIVO CORREGIDO
     pane: 'pane_puntos',
 
     pointToLayer: (f, latlng) => L.circleMarker(latlng, {
-      radius: 6,
+      radius: 7,
       color: '#d97706',
       fillColor: '#fbbf24',
-      fillOpacity: 0.75,
+      fillOpacity: 0.85,
       weight: 1
     }),
 
+    // CAMPOS REALES DEL GEOJSON:
+    // nam, descripcio, Pob_estudi
     popup: p => `
       <b>Punto de Estudio</b><br>
-      ${p.Nombre ?? ''}<br>
-      <b>Descripción:</b> ${p.Descripcion ?? 's/i'}
+      <b>Nombre:</b> ${p.nam ?? 's/i'}<br>
+      <b>Descripción:</b> ${p.descripcio ?? 's/i'}<br>
+      <b>Población Estudio:</b> ${p.Pob_estudi ?? 's/i'}
     `
   }
 
 ];
 
-// ---------- 4) HELPERS ----------
+
+// ---------- 3) HELPERS ----------
 const layerStore = new Map();
 const layerListEl = document.getElementById('layerList');
 const legendEl = document.getElementById('legend');
@@ -132,7 +113,8 @@ function addLegendRow(color, label) {
   legendEl.appendChild(row);
 }
 
-// ---------- 5) CONSTRUIR LISTA DE CAPAS ----------
+
+// ---------- 4) LISTA DE CAPAS ----------
 layersConfig.forEach(cfg => {
   const item = document.createElement('div');
   item.className = 'layer-item';
@@ -151,14 +133,15 @@ layersConfig.forEach(cfg => {
   layerListEl.appendChild(item);
 });
 
-// ---------- 6) MANEJO DE ACTIVACIÓN DE CAPAS ----------
+
+// ---------- 5) ACTIVACIÓN DE CAPAS ----------
 layerListEl.addEventListener('change', async e => {
   const id = e.target.dataset.layer;
   const cfg = layersConfig.find(x => x.id === id);
-
   if (!cfg) return;
 
   if (e.target.checked) {
+
     try {
       const resp = await fetch(cfg.url);
       const data = await resp.json();
@@ -182,14 +165,16 @@ layerListEl.addEventListener('change', async e => {
     }
 
   } else {
-    const l = layerStore.get(id);
-    if (l) map.removeLayer(l);
+    const lyr = layerStore.get(id);
+    if (lyr) map.removeLayer(lyr);
   }
 });
 
-// ---------- 7) CARGAR AUTOMÁTICO EL LÍMITE DE MOLLETURO ----------
+
+// ---------- 6) AUTO-CARGA DEL LÍMITE ----------
 (async () => {
   const auto = ['Parroquia_Molleturo'];
+
   for (const id of auto) {
     const chk = document.getElementById(`chk_${id}`);
     if (chk) {
@@ -203,5 +188,3 @@ layerListEl.addEventListener('change', async e => {
     setTimeout(() => map.fitBounds(parroquia.getBounds(), { padding: [20, 20] }), 300);
   }
 })();
-
-
