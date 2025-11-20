@@ -1,9 +1,16 @@
-/* ======== GENERAL ======== */
+/* =========================================================
+   Estética tipo MAPBOX Light / Streets
+   Paleta moderna, UI minimalista y limpia
+========================================================= */
+
+/* ===== GENERAL ===== */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: Arial, sans-serif;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  background: #f7f7f7;
+  color: #1e293b;
 }
 
 main {
@@ -11,95 +18,118 @@ main {
   height: calc(100% - 60px);
 }
 
-/* ======== TOP BAR ======== */
-.topbar {
-  background: #0f172a;
-  color: white;
-  padding: 10px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.topbar h1 {
-  font-size: 20px;
-  margin: 0;
-}
-
-.basemap-select label {
-  font-weight: bold;
-  margin-right: 5px;
-}
-
-.basemap-select select {
-  padding: 4px;
-}
-
-/* ======== PANEL LATERAL ======== */
-.panel {
-  width: 260px;
-  background: #f8fafc;
-  border-right: 1px solid #cbd5e1;
-  padding: 15px;
-  overflow-y: auto;
-}
-
-.panel-section {
-  margin-bottom: 20px;
-}
-
-.panel-section h3 {
-  margin: 0 0 8px 0;
-  border-bottom: 1px solid #cbd5e1;
-  padding-bottom: 4px;
-}
-
-.layer-list label {
-  display: block;
-  margin-bottom: 6px;
-  cursor: pointer;
-}
-
-/* ======== MAPA ======== */
 #map {
   flex-grow: 1;
 }
 
-/* ======== LEYENDA ======== */
-.legend {
-  font-size: 13px;
-  background: white;
-  padding: 10px;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-}
-
-.legend-item {
+/* ======= TOP BAR ======= */
+.topbar {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 10px 20px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
-.legend-color {
-  width: 18px;
-  height: 18px;
-  margin-right: 8px;
-  border: 1px solid #64748b;
+.topbar h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #0f172a;
 }
 
-/* ======== LABELS FLOTANTES ======== */
-.label-text {
+/* Select estilo Mapbox */
+.basemap-select select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
   font-size: 14px;
   color: #1e293b;
-  font-weight: bold;
-  text-shadow: 0 0 4px #ffffff;
 }
 
-/* ======== FOOTER ======== */
+.basemap-select select:hover {
+  border-color: #94a3b8;
+}
+
+/* ===== PANEL LATERAL ===== */
+.panel {
+  width: 270px;
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  padding: 18px;
+  overflow-y: auto;
+  box-shadow: 1px 0 5px rgba(0,0,0,0.05);
+}
+
+.panel-section {
+  margin-bottom: 25px;
+}
+
+.panel-section h3 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 4px;
+}
+
+/* Lista de capas */
+.layer-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.layer-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #3b82f6;
+}
+
+/* ===== LEYENDA ===== */
+.legend {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+/* ===== FOOTER ===== */
 .footer {
-  background: #0f172a;
-  color: white;
-  padding: 8px 20px;
   text-align: center;
-  font-size: 14px;
+  padding: 10px;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* ===== LABELS estilo Mapbox ===== */
+.label-text {
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 13px;
+  background: rgba(255,255,255,0.85);
+  padding: 2px 6px;
+  border-radius: 4px;
+  box-shadow: 0 0 3px rgba(0,0,0,0.2);
+}
+
+/* ===== POPUP MAPBOX STYLE ===== */
+.leaflet-popup-content-wrapper {
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  font-family: "Inter", sans-serif;
+}
+
+.leaflet-popup-content {
+  color: #0f172a;
+  font-size: 13px;
 }
