@@ -1,6 +1,6 @@
 /* =========================================================
    Geovisor Agrícola – Estética MAPBOX Light
-   Versión con todas las capas y Cacao rayado
+   Versión con Cacao rayado y sin ZAE en el panel
 ========================================================= */
 
 /* =========================================================
@@ -42,7 +42,7 @@ document.getElementById("basemap").addEventListener("change", e => {
 });
 
 /* =========================================================
-   PATRÓN RAYADO PARA CACAO (con fallback si falla plugin)
+   PATRÓN RAYADO PARA CACAO (con fallback)
 ========================================================= */
 let cacaoPattern = null;
 try {
@@ -126,8 +126,6 @@ const layersConfig = [
     label: "Áreas de cultivo de cacao",
     url: "Cacao Areas de Cultivo.geojson",
     pane: "pane_tematica",
-
-    // estilo como función para usar patrón si existe
     style: () => {
       const base = {
         color: "#047857",
@@ -141,7 +139,6 @@ const layersConfig = [
       }
       return base;
     },
-
     onEachFeature: (f, l) => {
       const p = f.properties || {};
       const label = p.label ?? "Cacao";
@@ -260,44 +257,9 @@ const layersConfig = [
       const nombre = p.label ?? p.simbolgia ?? "Aptitud agrícola";
       l.bindPopup(`<b>Aptitud agrícola:</b> ${nombre}`);
     }
-  },
-
-  // ----- ZAE 2014 -----
-  {
-    id: "ZAE2014",
-    label: "ZAE 2014",
-    url: "Zae_2014JSON.geojson",
-    pane: "pane_tematica",
-    style: {
-      color: "#e11d48",
-      weight: 0.8,
-      fillOpacity: 0.20
-    },
-    onEachFeature: (f, l) => {
-      const p = f.properties || {};
-      const nombre = p.CLASIFICAC ?? p.label ?? "ZAE 2014";
-      l.bindPopup(`<b>ZAE 2014:</b> ${nombre}`);
-    }
-  },
-
-  // ----- ZAE 2020 -----
-  {
-    id: "ZAE2020",
-    label: "ZAE 2020",
-    url: "Zae_2020JSON.geojson",
-    pane: "pane_tematica",
-    style: {
-      color: "#0ea5e9",
-      weight: 0.8,
-      fillOpacity: 0.20
-    },
-    onEachFeature: (f, l) => {
-      const p = f.properties || {};
-      const nombre = p.CLASIFICAC ?? p.label ?? "ZAE 2020";
-      l.bindPopup(`<b>ZAE 2020:</b> ${nombre}`);
-    }
   }
 
+  // 🔹 ZAE2014 y ZAE2020 eliminadas del panel (no están en layersConfig)
 ];
 
 /* =========================================================
@@ -350,9 +312,7 @@ layerListEl.addEventListener("change", async e => {
 
 /* =========================================================
    ARRANQUE: CAPAS PRENDIDAS POR DEFECTO
-   (ZAE2014 y ZAE2020 quedan apagadas)
 ========================================================= */
-
 const autoOnIds = [
   "Molleturo",
   "Comunidades",
@@ -363,8 +323,6 @@ const autoOnIds = [
   "Uso2015",
   "Capacidad2021",
   "Aptitud"
-  // "ZAE2014",
-  // "ZAE2020"
 ];
 
 (() => {
@@ -376,7 +334,6 @@ const autoOnIds = [
     }
   });
 
-  // Ajustar vista al límite parroquial
   setTimeout(() => {
     const lyr = layerStore.get("Molleturo");
     if (lyr) map.fitBounds(lyr.getBounds(), { padding: [50, 50] });
