@@ -1,30 +1,28 @@
 /* =========================================================
-   Geovisor Agrícola – estilo MAPBOX Light (sin API keys)
+   Geovisor Agrícola – Estética MAPBOX Light
+   Versión Final Optimizada
 ========================================================= */
 
 /* =========================================================
-   MAPAS BASE (Mapbox-like, 100% gratuitos)
+   MAPAS BASE (tipo Mapbox, sin API)
 ========================================================= */
 const basemaps = {
   voyager: L.tileLayer(
     "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
     { attribution: "&copy; CARTO & OSM" }
   ),
-
   positron: L.tileLayer(
     "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
     { attribution: "&copy; CARTO & OSM" }
   ),
-
   osm: L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     { attribution: "&copy; OpenStreetMap" }
   ),
-
   esri: L.tileLayer(
     "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     { attribution: "&copy; Esri" }
-  )
+  ),
 };
 
 /* =========================================================
@@ -33,10 +31,10 @@ const basemaps = {
 const map = L.map("map", {
   center: [-2.62, -79.46],
   zoom: 12,
-  layers: [basemaps.voyager] // Mapbox-like
+  layers: [basemaps.voyager]
 });
 
-// Selector
+/* Cambiar mapas base */
 document.getElementById("basemap").addEventListener("change", e => {
   const selected = e.target.value;
   Object.values(basemaps).forEach(b => map.removeLayer(b));
@@ -51,7 +49,7 @@ map.createPane("pane_tematica").style.zIndex = 500;
 map.createPane("pane_puntos").style.zIndex = 600;
 
 /* =========================================================
-   CAPAS REALES
+   CAPAS
 ========================================================= */
 const layersConfig = [
 
@@ -103,7 +101,7 @@ const layersConfig = [
 
       l.bindPopup(`
         <b>Comunidad:</b> ${nombre}<br>
-        <b>Población estudio:</b> ${p?.Pob_estudi ?? "s/i"}
+        <b>Población:</b> ${p?.Pob_estudi ?? "s/i"}
       `);
 
       L.marker(l.getLatLng(), {
@@ -148,21 +146,21 @@ layersConfig.forEach(cfg => {
   chk.dataset.layer = cfg.id;
   chk.id = "chk_" + cfg.id;
 
-  const label = document.createElement("label");
-  label.textContent = cfg.label;
-  label.htmlFor = chk.id;
+  const lab = document.createElement("label");
+  lab.textContent = cfg.label;
+  lab.htmlFor = chk.id;
 
   div.appendChild(chk);
-  div.appendChild(label);
+  div.appendChild(lab);
   layerListEl.appendChild(div);
 });
 
 /* =========================================================
-   ACTIVAR / DESACTIVAR
+   ACTIVAR / DESACTIVAR CAPAS
 ========================================================= */
 layerListEl.addEventListener("change", async e => {
   const id = e.target.dataset.layer;
-  const cfg = layersConfig.find(x => x.id === id);
+  const cfg = layersConfig.find(c => c.id === id);
   if (!cfg) return;
 
   if (e.target.checked) {
@@ -179,20 +177,22 @@ layerListEl.addEventListener("change", async e => {
     layerStore.set(id, layer);
 
   } else {
-    const layer = layerStore.get(id);
-    if (layer) map.removeLayer(layer);
+    const lyr = layerStore.get(id);
+    if (lyr) map.removeLayer(lyr);
   }
 });
 
 /* =========================================================
-   AUTO CARGAR MOLLETURO
+   CARGA AUTOMÁTICA DEL LÍMITE
 ========================================================= */
 (async () => {
-  document.getElementById("chk_Molleturo").checked = true;
-  document.getElementById("chk_Molleturo").dispatchEvent(new Event("change"));
+  const chk = document.getElementById("chk_Molleturo");
+  chk.checked = true;
+  chk.dispatchEvent(new Event("change"));
 
   setTimeout(() => {
     const lyr = layerStore.get("Molleturo");
-    if (lyr) map.fitBounds(lyr.getBounds(), { padding: [40, 40] });
+    if (lyr) map.fitBounds(lyr.getBounds(), { padding: [50, 50] });
   }, 700);
 })();
+
