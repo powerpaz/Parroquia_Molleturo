@@ -1,162 +1,163 @@
 /* =========================================================
    Geovisor Agrícola – Parroquia Molleturo
-   Versión Reparada y Optimizada (100% FUNCIONAL)
+   Estética Mapbox + Código Reparado + UI Limpia
 ========================================================= */
 
 /* =========================================================
-   1) MAPAS BASE
+   1) MAPAS BASE (Mapbox-like, sin API)
 ========================================================= */
 const basemaps = {
+  stadiamaps: L.tileLayer(
+    "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png",
+    { attribution: "&copy; Stadia Maps & OSM" }
+  ),
+
   carto: L.tileLayer(
-    'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    { attribution: '&copy; OSM & CARTO' }
+    "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+    { attribution: "&copy; OSM & CARTO" }
   ),
+
   osm: L.tileLayer(
-    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    { attribution: '&copy; OpenStreetMap' }
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    { attribution: "&copy; OpenStreetMap" }
   ),
+
   esri: L.tileLayer(
-    'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    { attribution: '&copy; Esri' }
+    "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    { attribution: "&copy; Esri" }
   ),
+
   toner: L.tileLayer(
-    'https://stamen-tiles.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png',
-    { attribution: '&copy; Stamen' }
+    "https://stamen-tiles.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png",
+    { attribution: "&copy; Stamen" }
   )
 };
 
 /* =========================================================
    2) INICIAR MAPA
 ========================================================= */
-const map = L.map('map', {
+const map = L.map("map", {
   center: [-2.62, -79.46],
   zoom: 12,
-  layers: [basemaps.carto]
+  layers: [basemaps.stadiamaps]
 });
 
-// Selector de mapa base (corregido)
-document.getElementById('basemap').addEventListener('change', e => {
+// Cambiar mapas base
+document.getElementById("basemap").addEventListener("change", e => {
   const selected = e.target.value;
-
-  // Quitar mapas base actuales
   Object.values(basemaps).forEach(b => map.removeLayer(b));
-
-  // Agregar mapa base nuevo
   basemaps[selected].addTo(map);
 });
 
 /* =========================================================
    3) PANES
 ========================================================= */
-map.createPane('pane_limites'); map.getPane('pane_limites').style.zIndex = 400;
-map.createPane('pane_tematica'); map.getPane('pane_tematica').style.zIndex = 500;
-map.createPane('pane_puntos'); map.getPane('pane_puntos').style.zIndex = 600;
+map.createPane("pane_limites").style.zIndex = 400;
+map.createPane("pane_tematica").style.zIndex = 500;
+map.createPane("pane_puntos").style.zIndex = 600;
 
 /* =========================================================
-   4) CAPAS CONFIGURADAS (PROYECTO REAL)
+   4) CAPAS (ARCHIVOS REALES DE TU REPO)
 ========================================================= */
-
 const layersConfig = [
 
-  /* ----- LÍMITE PARROQUIAL (EXISTE EN TU REPO) ----- */
+  // ---------- Límite parroquial ----------
   {
-    id: 'Parroquia_Molleturo',
-    label: 'Parroquia Molleturo (límite)',
-    url: 'Parroquia_MolleturoJSON.geojson',
-    pane: 'pane_limites',
+    id: "Molleturo",
+    label: "Límite Parroquial",
+    url: "Parroquia_MolleturoJSON.geojson",
+    pane: "pane_limites",
 
-    style: { color: '#0ea5e9', weight: 2, fillOpacity: 0 },
+    style: {
+      color: "#0284c7",
+      weight: 2,
+      fillOpacity: 0
+    },
 
-    onEachFeature: (feat, lyr) => {
-      const nombre = feat.properties?.Nombre ?? 'Molleturo';
+    onEachFeature: (f, l) => {
+      const nombre = f.properties?.Nombre ?? "Molleturo";
 
-      lyr.bindPopup(`<b>Parroquia:</b> ${nombre}`);
+      l.bindPopup(`<b>Parroquia:</b> ${nombre}`);
 
-      // Etiqueta en el centro
-      try {
-        const c = lyr.getBounds().getCenter();
-        L.marker(c, {
-          icon: L.divIcon({
-            className: 'label-text',
-            html: `<b>${nombre}</b>`
-          })
-        }).addTo(map);
-      } catch { }
-    }
-  },
-
-  /* ----- COMUNIDADES (TU ARCHIVO REAL) ----- */
-  {
-    id: 'Comunidades',
-    label: 'Comunidades',
-    url: 'Puntos_de_Estudio.geojson',
-    pane: 'pane_puntos',
-
-    pointToLayer: (f, latlng) => L.circleMarker(latlng, {
-      radius: 6,
-      color: '#1d4ed8',
-      fillColor: '#3b82f6',
-      fillOpacity: 0.8,
-      weight: 1
-    }),
-
-    onEachFeature: (feat, lyr) => {
-      const p = feat.properties;
-      lyr.bindPopup(`
-        <b>Comunidad:</b> ${p?.Nombre ?? p?.nam ?? "Sin nombre"}<br>
-        <b>Población Estudio:</b> ${p?.Pob_estudi ?? "s/i"}<br>
-      `);
-
-      // Etiqueta encima
-      L.marker(lyr.getLatLng(), {
+      const center = l.getBounds().getCenter();
+      L.marker(center, {
         icon: L.divIcon({
           className: "label-text",
-          html: p?.Nombre ?? p?.nam ?? "s/i"
+          html: nombre
         })
       }).addTo(map);
     }
   },
 
-  /* ----- ZAE 2020 (EXISTE EN TU REPO) ----- */
+  // ---------- Comunidades ----------
   {
-    id: 'ZAE2020',
-    label: 'ZAE 2020',
-    url: 'Zae_2020JSON.geojson',
-    pane: 'pane_tematica',
-    style: { color: '#06b6d4', weight: 1, fillOpacity: 0.3 },
+    id: "Comunidades",
+    label: "Comunidades",
+    url: "Puntos_de_Estudio.geojson",
+    pane: "pane_puntos",
+
+    pointToLayer: (f, latlng) =>
+      L.circleMarker(latlng, {
+        radius: 6,
+        color: "#2563eb",
+        fillColor: "#3b82f6",
+        fillOpacity: 0.9,
+        weight: 1
+      }),
+
     onEachFeature: (f, l) => {
-      l.bindPopup(`<b>ZAE:</b> ${f.properties?.CLASIFICAC ?? 's/i'}`);
+      const p = f.properties;
+      const nombre = p?.Nombre ?? p?.nam ?? "Sin nombre";
+
+      l.bindPopup(`
+        <b>Comunidad:</b> ${nombre}<br>
+        <b>Población estudio:</b> ${p?.Pob_estudi ?? "s/i"}
+      `);
+
+      L.marker(l.getLatLng(), {
+        icon: L.divIcon({
+          className: "label-text",
+          html: nombre
+        })
+      }).addTo(map);
+    }
+  },
+
+  // ---------- ZAE 2020 ----------
+  {
+    id: "ZAE2020",
+    label: "ZAE 2020",
+    url: "Zae_2020JSON.geojson",
+    pane: "pane_tematica",
+
+    style: {
+      color: "#0ea5e9",
+      weight: 1,
+      fillOpacity: 0.25
+    },
+
+    onEachFeature: (f, l) => {
+      l.bindPopup(`<b>ZAE:</b> ${f.properties?.CLASIFICAC ?? "s/i"}`);
     }
   }
-
-  /* ----- ⚠ OPCIONAL: ESTA CAPA NO EXISTE ⚠ -----
-     {
-       id: 'Zonas',
-       label: 'Zonas agrícolas',
-       url: 'Zonas.geojson',
-       ...
-     }
-     SOLO LA ACTIVO CUANDO ME SUBAS EL ARCHIVO
-  */
 ];
 
 /* =========================================================
-   5) PANEL DE CAPAS (FUNCIONAL)
+   5) PANEL DE CAPAS
 ========================================================= */
-
 const layerStore = new Map();
-const layerListEl = document.getElementById('layerList');
+const layerListEl = document.getElementById("layerList");
 
 layersConfig.forEach(cfg => {
-  const div = document.createElement('div');
-  div.className = 'layer-item';
+  const div = document.createElement("div");
+  div.className = "layer-item";
 
-  const chk = document.createElement('input');
-  chk.type = 'checkbox';
+  const chk = document.createElement("input");
+  chk.type = "checkbox";
   chk.dataset.layer = cfg.id;
-  chk.id = 'chk_' + cfg.id;
+  chk.id = "chk_" + cfg.id;
 
-  const label = document.createElement('label');
+  const label = document.createElement("label");
   label.textContent = cfg.label;
   label.htmlFor = chk.id;
 
@@ -166,33 +167,25 @@ layersConfig.forEach(cfg => {
 });
 
 /* =========================================================
-   6) CARGA / DESCARGA DE CAPAS
+   6) ACTIVAR / DESACTIVAR CAPAS
 ========================================================= */
-
-layerListEl.addEventListener('change', async e => {
+layerListEl.addEventListener("change", async e => {
   const id = e.target.dataset.layer;
   const cfg = layersConfig.find(c => c.id === id);
   if (!cfg) return;
 
   if (e.target.checked) {
-    // Cargar capa
-    try {
-      const data = await fetch(cfg.url).then(r => r.json());
+    const data = await fetch(cfg.url).then(r => r.json());
 
-      const layer = L.geoJSON(data, {
-        pane: cfg.pane,
-        style: cfg.style,
-        pointToLayer: cfg.pointToLayer,
-        onEachFeature: cfg.onEachFeature
-      });
+    const layer = L.geoJSON(data, {
+      pane: cfg.pane,
+      style: cfg.style,
+      pointToLayer: cfg.pointToLayer,
+      onEachFeature: cfg.onEachFeature
+    });
 
-      layer.addTo(map);
-      layerStore.set(id, layer);
-
-    } catch (err) {
-      console.error("Error cargando capa:", id, err);
-      alert("Error cargando " + cfg.label);
-    }
+    layer.addTo(map);
+    layerStore.set(id, layer);
 
   } else {
     const layer = layerStore.get(id);
@@ -201,20 +194,15 @@ layerListEl.addEventListener('change', async e => {
 });
 
 /* =========================================================
-   7) AUTO-CARGA DE MOLLETURO AL ENTRAR
+   7) AUTO-CARGA LÍMITE PARROQUIAL
 ========================================================= */
-
 (async () => {
-  const id = 'Parroquia_Molleturo';
-  const chk = document.getElementById('chk_' + id);
-
-  if (chk) {
-    chk.checked = true;
-    chk.dispatchEvent(new Event('change'));
-  }
+  const chk = document.getElementById("chk_Molleturo");
+  chk.checked = true;
+  chk.dispatchEvent(new Event("change"));
 
   setTimeout(() => {
-    const lyr = layerStore.get(id);
-    if (lyr) map.fitBounds(lyr.getBounds(), { padding: [50, 50] });
-  }, 800);
+    const layer = layerStore.get("Molleturo");
+    if (layer) map.fitBounds(layer.getBounds(), { padding: [40, 40] });
+  }, 700);
 })();
