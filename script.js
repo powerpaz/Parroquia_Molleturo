@@ -1,86 +1,57 @@
 /* =========================================================
-   Geovisor Agrícola – Estética MAPBOX mejorada
+   Geovisor Agrícola – Estética MAPBOX Light
+   Solo Límite, Comunidades y Cacao (rayado)
 ========================================================= */
 
 /* =========================================================
-   MAPAS BASE (con estética Mapbox)
+   MAPAS BASE (tipo Mapbox, sin API)
 ========================================================= */
 const basemaps = {
   voyager: L.tileLayer(
-    "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-    { 
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 20
-    }
+    "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+    { attribution: "&copy; CARTO & OSM" }
   ),
   positron: L.tileLayer(
-    "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-    { 
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 20
-    }
+    "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+    { attribution: "&copy; CARTO & OSM" }
   ),
   osm: L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    { 
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      maxZoom: 19
-    }
+    { attribution: "&copy; OpenStreetMap" }
   ),
   esri: L.tileLayer(
-    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    { 
-      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community',
-      maxZoom: 19
-    }
+    "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    { attribution: "&copy; Esri" }
   ),
 };
 
 /* =========================================================
-   INICIAR MAPA con controles mejorados
+   INICIAR MAPA
 ========================================================= */
 const map = L.map("map", {
   center: [-2.62, -79.46],
   zoom: 12,
-  layers: [basemaps.voyager],
-  zoomControl: false, // Vamos a añadir uno personalizado después
-  attributionControl: true
+  layers: [basemaps.voyager]
 });
-
-// Control de zoom estilo Mapbox
-L.control.zoom({
-  position: 'topright',
-  zoomInTitle: 'Acercar',
-  zoomOutTitle: 'Alejar'
-}).addTo(map);
-
-// Control de atribución más compacto
-map.attributionControl.setPrefix('<a href="https://leafletjs.com" title="A JavaScript library for interactive maps">Leaflet</a>');
 
 /* Selector de mapa base */
 document.getElementById("basemap").addEventListener("change", e => {
   const selected = e.target.value;
-  Object.values(basemaps).forEach(b => {
-    if (map.hasLayer(b)) {
-      map.removeLayer(b);
-    }
-  });
+  Object.values(basemaps).forEach(b => map.removeLayer(b));
   basemaps[selected].addTo(map);
 });
 
 /* =========================================================
-   PATRÓN RAYADO MEJORADO PARA CACAO
+   PATRÓN RAYADO PARA CACAO (con fallback si no carga plugin)
 ========================================================= */
 let cacaoPattern = null;
 try {
   if (L.StripePattern) {
     cacaoPattern = new L.StripePattern({
       weight: 2,
-      spaceWeight: 3,
-      color: "#065f46",
-      opacity: 0.6,
+      spaceWeight: 4,
+      color: "#000000",
+      opacity: 0.7,
       angle: 45
     }).addTo(map);
   }
@@ -89,48 +60,43 @@ try {
 }
 
 /* =========================================================
-   PANES con z-index mejorado
+   PANES
 ========================================================= */
-map.createPane("pane_limites").style.zIndex = 410;
-map.createPane("pane_tematica").style.zIndex = 420;
-map.createPane("pane_puntos").style.zIndex = 430;
+map.createPane("pane_limites").style.zIndex = 400;
+map.createPane("pane_tematica").style.zIndex = 500;
+map.createPane("pane_puntos").style.zIndex = 600;
 
 /* =========================================================
-   DEFINICIÓN DE CAPAS - Estilos mejorados
+   DEFINICIÓN DE CAPAS
+   🔹 SOLO 3 CAPAS: Molleturo, Comunidades, Cacao
 ========================================================= */
 const layersConfig = [
+
+  // ----- Límite parroquial -----
   {
     id: "Molleturo",
     label: "Límite Parroquial",
     url: "Parroquia_MolleturoJSON.geojson",
     pane: "pane_limites",
     style: {
-      color: "#1e40af",
-      weight: 3,
-      opacity: 0.8,
-      fillOpacity: 0,
-      dashArray: "5, 5"
+      color: "#0284c7",
+      weight: 2,
+      fillOpacity: 0
     },
     onEachFeature: (f, l) => {
       const nombre = f.properties?.Nombre ?? "Molleturo";
-      l.bindPopup(`
-        <div class="popup-content">
-          <h4>${nombre}</h4>
-          <p><strong>Parroquia:</strong> ${nombre}</p>
-        </div>
-      `);
-      
-      // Labels más elegantes
+      l.bindPopup(`<b>Parroquia:</b> ${nombre}`);
       const c = l.getBounds().getCenter();
       L.marker(c, {
         icon: L.divIcon({
           className: "label-text",
-          html: nombre,
-          iconSize: [100, 20]
+          html: nombre
         })
       }).addTo(map);
     }
   },
+
+  // ----- Comunidades / Puntos de estudio -----
   {
     id: "Comunidades",
     label: "Comunidades / Puntos de estudio",
@@ -138,24 +104,24 @@ const layersConfig = [
     pane: "pane_puntos",
     pointToLayer: (f, latlng) =>
       L.circleMarker(latlng, {
-        radius: 7,
-        color: "#ffffff",
-        weight: 2,
-        fillColor: "#059669",
-        fillOpacity: 0.9
+        radius: 6,
+        color: "#0f172a",
+        weight: 1.5,
+        fillColor: "#22c55e",
+        fillOpacity: 0.95
       }),
     onEachFeature: (f, l) => {
       const p = f.properties || {};
       const nombre = p.Nombre ?? p.nam ?? "Sin nombre";
       const pob = p.Pob_estudi ?? "s/i";
       l.bindPopup(`
-        <div class="popup-content">
-          <h4>${nombre}</h4>
-          <p><strong>Población estudio:</strong> ${pob}</p>
-        </div>
+        <b>Comunidad:</b> ${nombre}<br>
+        <b>Población estudio:</b> ${pob}
       `);
     }
   },
+
+  // ----- Cacao Áreas de Cultivo (rayado o sólido) -----
   {
     id: "Cacao",
     label: "Áreas de cultivo de cacao",
@@ -163,17 +129,14 @@ const layersConfig = [
     pane: "pane_tematica",
     style: () => {
       const base = {
-        color: "#065f46",
-        weight: 1.5,
-        opacity: 0.8,
-        fillOpacity: 0.3
+        color: "#047857",
+        weight: 1
       };
       if (cacaoPattern) {
         base.fillPattern = cacaoPattern;
-        base.fillOpacity = 0.6;
       } else {
-        base.fillColor = "#10b981";
-        base.fillOpacity = 0.4;
+        base.fillColor = "#bbf7d0";
+        base.fillOpacity = 0.6;
       }
       return base;
     },
@@ -185,24 +148,22 @@ const layersConfig = [
         areaTxt = `${p.sce.toFixed(2)} ${p.usce || ""}`;
       }
       l.bindPopup(`
-        <div class="popup-content">
-          <h4>${label}</h4>
-          <p><strong>Tamaño de parcela:</strong> ${p.tap ?? "s/i"}</p>
-          <p><strong>Uso:</strong> ${p.uso ?? "s/i"}</p>
-          <p><strong>Área:</strong> ${areaTxt}</p>
-        </div>
+        <b>Etiqueta:</b> ${label}<br>
+        <b>Tamaño de parcela:</b> ${p.tap ?? "s/i"}<br>
+        <b>Uso:</b> ${p.uso ?? "s/i"}<br>
+        <b>Área:</b> ${areaTxt}
       `);
     }
   }
+
 ];
 
 /* =========================================================
-   PANEL LATERAL MEJORADO
+   PANEL LATERAL (check solo para esas 3 capas)
 ========================================================= */
 const layerStore = new Map();
 const layerListEl = document.getElementById("layerList");
 
-// Crear elementos de la interfaz
 layersConfig.forEach(cfg => {
   const div = document.createElement("div");
   div.className = "layer-item";
@@ -222,7 +183,7 @@ layersConfig.forEach(cfg => {
 });
 
 /* =========================================================
-   GESTIÓN DE CAPAS
+   ACTIVAR / DESACTIVAR CAPAS
 ========================================================= */
 layerListEl.addEventListener("change", async e => {
   const id = e.target.dataset.layer;
@@ -230,20 +191,15 @@ layerListEl.addEventListener("change", async e => {
   if (!cfg) return;
 
   if (e.target.checked) {
-    try {
-      const data = await fetch(cfg.url).then(r => r.json());
-      const layer = L.geoJSON(data, {
-        pane: cfg.pane,
-        style: cfg.style,
-        pointToLayer: cfg.pointToLayer,
-        onEachFeature: cfg.onEachFeature
-      });
-      layer.addTo(map);
-      layerStore.set(id, layer);
-    } catch (error) {
-      console.error(`Error cargando capa ${cfg.label}:`, error);
-      e.target.checked = false;
-    }
+    const data = await fetch(cfg.url).then(r => r.json());
+    const layer = L.geoJSON(data, {
+      pane: cfg.pane,
+      style: cfg.style,
+      pointToLayer: cfg.pointToLayer,
+      onEachFeature: cfg.onEachFeature
+    });
+    layer.addTo(map);
+    layerStore.set(id, layer);
   } else {
     const lyr = layerStore.get(id);
     if (lyr) map.removeLayer(lyr);
@@ -251,50 +207,25 @@ layerListEl.addEventListener("change", async e => {
 });
 
 /* =========================================================
-   INICIALIZACIÓN
+   ARRANQUE: CAPAS PRENDIDAS POR DEFECTO
 ========================================================= */
-const autoOnIds = ["Molleturo", "Comunidades", "Cacao"];
+const autoOnIds = [
+  "Molleturo",
+  "Comunidades",
+  "Cacao"
+];
 
-// Función de inicialización
-(async function initialize() {
-  // Activar capas por defecto
-  for (const id of autoOnIds) {
+(() => {
+  autoOnIds.forEach(id => {
     const chk = document.getElementById("chk_" + id);
     if (chk) {
       chk.checked = true;
       chk.dispatchEvent(new Event("change"));
     }
-  }
+  });
 
-  // Ajustar vista después de cargar
   setTimeout(() => {
     const lyr = layerStore.get("Molleturo");
-    if (lyr) {
-      map.fitBounds(lyr.getBounds(), { 
-        padding: [50, 50],
-        maxZoom: 14
-      });
-    }
-  }, 1000);
+    if (lyr) map.fitBounds(lyr.getBounds(), { padding: [50, 50] });
+  }, 800);
 })();
-
-/* =========================================================
-   MEJORAS ADICIONALES
-========================================================= */
-
-// Loading state
-map.on('load', () => {
-  document.body.classList.add('map-loaded');
-});
-
-// Manejo de errores de tiles
-map.on('tileerror', (e) => {
-  console.warn('Error loading tile:', e);
-});
-
-// Efecto de carga suave
-window.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    document.body.classList.add('loaded');
-  }, 100);
-});
