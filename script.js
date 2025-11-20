@@ -3,6 +3,7 @@
    - Capas con switches
    - Selector de mapa base
    - NUEVO: Provincias (provincias_simplificado.geojson)
+   - NUEVO: Puntos de Estudio (puntos_de_estudio.geojson)
    ========================================================= */
 
 // ---------- 1) MAPA BASE ----------
@@ -14,127 +15,103 @@ const basemaps = {
     attribution: '&copy; OpenStreetMap'
   }),
   esri: L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Esri World Imagery'
-  }),
-  toner: L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}.png', {
-    attribution: 'Stamen Toner Lite via Stadia Maps'
+    attribution: 'Esri'
   })
 };
 
+// ---------- MAPA PRINCIPAL ----------
 const map = L.map('map', {
-  zoomControl: true,
-  attributionControl: true,
-  minZoom: 3,
-  maxZoom: 19
-}).setView([-2.88, -79.33], 11);
-  // Escala métrica (km)
-  L.control.scale({ position: 'bottomleft', metric: true, imperial: false, maxWidth: 200 }).addTo(map);
- // Molleturo aprox.
+  center: [-2.88, -79.29],
+  zoom: 12,
+  layers: [basemaps.carto]
+});
 
-basemaps.carto.addTo(map);
+// ---------- SELECTOR DE BASEMAP ----------
+L.control.layers(basemaps, null, { position: 'topright' }).addTo(map);
 
-// Selector de mapa base
-const bmSel = document.getElementById('basemap');
-if (bmSel) {
-  bmSel.addEventListener('change', (e) => {
-    const val = e.target.value;
-    Object.values(basemaps).forEach(b => map.removeLayer(b));
-    basemaps[val].addTo(map);
-  });
-}
+// ---------- 2) PANELES ----------
+map.createPane('pane_limites');
+map.getPane('pane_limites').style.zIndex = 400;
 
-// ---------- 2) PANELES (orden de dibujo) ----------
-map.createPane('pane_provincias');      map.getPane('pane_provincias').style.zIndex = 350;  // bajo temáticas
-map.createPane('pane_tematica');        map.getPane('pane_tematica').style.zIndex   = 401;  // por defecto
-map.createPane('pane_parroquia');       map.getPane('pane_parroquia').style.zIndex  = 450;  // arriba
+map.createPane('pane_tematica');
+map.getPane('pane_tematica').style.zIndex = 500;
 
-// ---------- 3) CONFIG DE CAPAS ----------
+map.createPane('pane_puntos');
+map.getPane('pane_puntos').style.zIndex = 600;
+
+// ---------- 3) CONFIGURACIÓN DE CAPAS ----------
 const layersConfig = [
-  // NUEVO: Provincias (referencia)
-  {
-    id: 'Provincias',
-    label: 'Provincias (simplificado)',
-    url: 'provincias_simplificado.geojson',
-    pane: 'pane_provincias',
-    style: { color: '#94a3b8', weight: 1, fillOpacity: 0, dashArray: '4 2' },
-    popup: (p) => `<b>Provincia:</b> ${p.NOMBRE ?? p.nombre ?? p.PROVINCIA ?? p.provincia ?? 's/i'}`
-  },
 
-  // Límite parroquial
+  // --- LIMITE PARROQUIAL ---
   {
     id: 'Parroquia_Molleturo',
-    label: 'Límite Parroquial',
-    url: 'Parroquia_MolleturoJSON.geojson',
-    pane: 'pane_parroquia',
-    style: { color: '#00d084', weight: 2, fillOpacity: 0.05 },
-    popup: (p) => `<b>Parroquia:</b> ${p.PARROQUIA ?? 'Molleturo'}`
+    label: 'Parroquia Molleturo (límite)',
+    url: 'Molleturo_Limite.geojson',
+    pane: 'pane_limites',
+    style: { color: '#0ea5e9', weight: 2, fillOpacity: 0 },
+    popup: p => `<b>Parroquia:</b> ${p.Nombre || 'Molleturo'}`
   },
 
-  // Temáticas
+  // --- COMUNIDADES ---
   {
-    id: 'ActitudAgricola',
-    label: 'Actitud Agrícola',
-    url: 'ActitudAgricolaJSON.json',
-    pane: 'pane_tematica',
-    style: { color: '#f59e0b', weight: 0.7, fillOpacity: 0.6 },
-    popup: (p) => `<b>Clase:</b> ${p.clase ?? p.CLASIFICAC ?? 's/i'}`
+    id: 'Comunidades',
+    label: 'Comunidades',
+    url: 'Comunidades.geojson',
+    pane: 'pane_puntos',
+    pointToLayer: (f, latlng) => L.circleMarker(latlng, {
+      radius: 5,
+      color: '#2563eb',
+      fillColor: '#3b82f6',
+      fillOpacity: 0.6,
+      weight: 1
+    }),
+    popup: p => `<b>Comunidad:</b> ${p.Nombre ?? 's/i'}`
   },
+
+  // --- ZONAS ---
   {
-    id: 'Capacidad_uso_2021',
-    label: 'Capacidad de uso (2021)',
-    url: 'Capacidad_uso_2021JSON.json',
+    id: 'Zonas',
+    label: 'Zonas agrícolas',
+    url: 'Zonas.geojson',
     pane: 'pane_tematica',
-    style: { color: '#a855f7', weight: 0.7, fillOpacity: 0.5 },
-    popup: (p) => `<b>Capacidad:</b> ${p.CAP_USO ?? p.capacidad ?? 's/i'}`
+    style: { color: '#14b8a6', weight: 1, fillOpacity: 0.25 },
+    popup: p => `<b>Zona:</b> ${p.Nombre ?? 's/i'}`
   },
+
+  // --- ZAE ---
   {
-    id: 'conflictos_apt_uso',
-    label: 'Conflictos aptitud/uso',
-    url: 'conflictos_apt_usoJSON.geojson',
-    pane: 'pane_tematica',
-    style: { color: '#ef4444', weight: 0.7, fillOpacity: 0.5 },
-    popup: (p) => `<b>Conflicto:</b> ${p.TIPO ?? p.tipo ?? 's/i'}`
-  },
-  {
-    id: 'Sectores_2010',
-    label: 'Sectores 2010',
-    url: 'Sectores_2010JSON.geojson',
-    pane: 'pane_tematica',
-    style: { color: '#22c55e', weight: 0.5, fillOpacity: 0.25 },
-    popup: (p) => `<b>Sector 2010:</b> ${p.SECTOR ?? p.sector ?? 's/i'}`
-  },
-  {
-    id: 'Sectores_2022',
-    label: 'Sectores 2022',
-    url: 'Sectores_2022JSON.geojson',
-    pane: 'pane_tematica',
-    style: { color: '#3b82f6', weight: 0.5, fillOpacity: 0.25 },
-    popup: (p) => `<b>Sector 2022:</b> ${p.SECTOR ?? p.sector ?? 's/i'}`
-  },
-  {
-    id: 'Uso_2015',
-    label: 'Uso del suelo (2015)',
-    url: 'Uso_2015JSON.geojson',
-    pane: 'pane_tematica',
-    style: { color: '#fb923c', weight: 0.6, fillOpacity: 0.45 },
-    popup: (p) => `<b>Uso:</b> ${p.USO ?? p.uso ?? p.CLASE ?? 's/i'}`
-  },
-  {
-    id: 'Zae_2014',
-    label: 'ZAE 2014',
-    url: 'Zae_2014JSON.geojson',
-    pane: 'pane_tematica',
-    style: { color: '#10b981', weight: 0.6, fillOpacity: 0.35 },
-    popup: (p) => `<b>ZAE 2014:</b> ${p.ZAE ?? p.CLASIFICAC ?? 's/i'}`
-  },
-  {
-    id: 'Zae_2020',
+    id: 'ZAE2020',
     label: 'ZAE 2020',
     url: 'Zae_2020JSON.geojson',
     pane: 'pane_tematica',
     style: { color: '#06b6d4', weight: 0.6, fillOpacity: 0.35 },
-    popup: (p) => `<b>ZAE 2020:</b> ${p.ZAE ?? p.CLASIFICAC ?? 's/i'}`
+    popup: p => `<b>ZAE 2020:</b> ${p.ZAE ?? p.CLASIFICAC ?? 's/i'}`
+  },
+
+  // =========================================================
+  //     ★★ NUEVA CAPA – PUNTOS DE ESTUDIO ★★
+  // =========================================================
+  {
+    id: 'Puntos_Estudio',
+    label: 'Puntos de Estudio',
+    url: 'Puntos_de_Estudio.geojson',
+    pane: 'pane_puntos',
+
+    pointToLayer: (f, latlng) => L.circleMarker(latlng, {
+      radius: 6,
+      color: '#d97706',
+      fillColor: '#fbbf24',
+      fillOpacity: 0.75,
+      weight: 1
+    }),
+
+    popup: p => `
+      <b>Punto de Estudio</b><br>
+      ${p.Nombre ?? ''}<br>
+      <b>Descripción:</b> ${p.Descripcion ?? 's/i'}
+    `
   }
+
 ];
 
 // ---------- 4) HELPERS ----------
@@ -143,88 +120,88 @@ const layerListEl = document.getElementById('layerList');
 const legendEl = document.getElementById('legend');
 
 function addLegendRow(color, label) {
-  const sw = document.createElement('div'); sw.className = 'swatch'; sw.style.background = color;
-  const lb = document.createElement('div'); lb.textContent = label;
-  legendEl.appendChild(sw); legendEl.appendChild(lb);
+  const sw = document.createElement('div');
+  sw.className = 'swatch';
+  sw.style.background = color;
+
+  const row = document.createElement('div');
+  row.className = 'legend-row';
+  row.appendChild(sw);
+  row.appendChild(document.createTextNode(label));
+
+  legendEl.appendChild(row);
 }
 
-function makePill(color){ const d=document.createElement('span'); d.className='pill'; d.style.background=color; return d; }
+// ---------- 5) CONSTRUIR LISTA DE CAPAS ----------
+layersConfig.forEach(cfg => {
+  const item = document.createElement('div');
+  item.className = 'layer-item';
 
-function featureStyle(styleObj){
-  return () => ({
-    color: styleObj.color,
-    weight: styleObj.weight ?? 0.8,
-    fillOpacity: styleObj.fillOpacity ?? 0.4,
-    opacity: 1,
-    dashArray: styleObj.dashArray ?? null
-  });
-}
+  const chk = document.createElement('input');
+  chk.type = 'checkbox';
+  chk.id = `chk_${cfg.id}`;
+  chk.dataset.layer = cfg.id;
 
-function onEachFeatureFactory(popupFn){
-  return (feature, layer) => {
-    const p = feature?.properties ?? {};
-    const content = popupFn ? popupFn(p) : Object.entries(p).map(([k,v])=>`<b>${k}</b>: ${v}`).join('<br>');
-    layer.bindPopup(content, { maxWidth: 360 });
-  };
-}
+  const label = document.createElement('label');
+  label.htmlFor = chk.id;
+  label.textContent = cfg.label;
 
-// ---------- 5) CARGA DE CAPAS + UI ----------
-(async function init(){
-  // Panel de capas
-  layersConfig.forEach(cfg => {
-    const row = document.createElement('div');
-    row.className = 'layer-item';
+  item.appendChild(chk);
+  item.appendChild(label);
+  layerListEl.appendChild(item);
+});
 
-    const left = document.createElement('label');
-    left.htmlFor = `chk_${cfg.id}`;
-    left.appendChild(makePill(cfg.style.color));
-    left.appendChild(document.createTextNode(cfg.label));
+// ---------- 6) MANEJO DE ACTIVACIÓN DE CAPAS ----------
+layerListEl.addEventListener('change', async e => {
+  const id = e.target.dataset.layer;
+  const cfg = layersConfig.find(x => x.id === id);
 
-    const right = document.createElement('input');
-    right.type = 'checkbox';
-    right.id = `chk_${cfg.id}`;
-    right.checked = true;
+  if (!cfg) return;
 
-    row.appendChild(left);
-    row.appendChild(right);
-    layerListEl.appendChild(row);
+  if (e.target.checked) {
+    try {
+      const resp = await fetch(cfg.url);
+      const data = await resp.json();
 
-    right.addEventListener('change', () => {
-      const lyr = layerStore.get(cfg.id);
-      if (!lyr) return;
-      if (right.checked) lyr.addTo(map);
-      else map.removeLayer(lyr);
-    });
+      const layer = L.geoJSON(data, {
+        pane: cfg.pane,
+        style: cfg.style,
+        pointToLayer: cfg.pointToLayer,
+        onEachFeature: (feat, lyr) => {
+          const p = feat.properties;
+          if (cfg.popup) lyr.bindPopup(cfg.popup(p));
+        }
+      });
 
-    addLegendRow(cfg.style.color, cfg.label);
-  });
+      layer.addTo(map);
+      layerStore.set(id, layer);
 
-  // Carga de GeoJSON
-  for (const cfg of layersConfig){
-    try{
-      const res = await fetch(cfg.url);
-      if(!res.ok) throw new Error(`HTTP ${res.status} al cargar ${cfg.url}`);
-      const gj = await res.json();
+    } catch (err) {
+      console.error("Error cargando capa:", id, err);
+      alert("No se pudo cargar " + id);
+    }
 
-      const opts = {
-        pane: cfg.pane ?? 'overlayPane',
-        style: featureStyle(cfg.style),
-        onEachFeature: onEachFeatureFactory(cfg.popup)
-      };
+  } else {
+    const l = layerStore.get(id);
+    if (l) map.removeLayer(l);
+  }
+});
 
-      const layer = L.geoJSON(gj, opts);
-      layerStore.set(cfg.id, layer).get(cfg.id).addTo(map);
-    }catch(err){
-      console.error('Error capa', cfg.id, err);
-      const chk = document.getElementById(`chk_${cfg.id}`);
-      if (chk) chk.closest('.layer-item').style.borderColor = '#ef4444';
+// ---------- 7) CARGAR AUTOMÁTICO EL LÍMITE DE MOLLETURO ----------
+(async () => {
+  const auto = ['Parroquia_Molleturo'];
+  for (const id of auto) {
+    const chk = document.getElementById(`chk_${id}`);
+    if (chk) {
+      chk.checked = true;
+      chk.dispatchEvent(new Event('change'));
     }
   }
 
-  // Zoom a Molleturo con el límite parroquial si está
   const parroquia = layerStore.get('Parroquia_Molleturo');
-  if (parroquia){
-    setTimeout(()=> map.fitBounds(parroquia.getBounds(), { padding:[20,20] }), 300);
+  if (parroquia) {
+    setTimeout(() => map.fitBounds(parroquia.getBounds(), { padding: [20, 20] }), 300);
   }
 })();
+
 
