@@ -6,10 +6,11 @@
 
   <title>Geovisor Agrícola de la Parroquia de Molleturo</title>
 
-  <!-- Leaflet -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-  <!-- Estilo personalizado (Mapbox-like) -->
+  <!-- Estilos propios -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -22,13 +23,14 @@
       <label for="basemap">Mapa base:</label>
       <select id="basemap">
         <option value="voyager">Mapbox Light (Voyager)</option>
-        <option value="positron">Mapbox Positron</option>
+        <option value="positron">Carto Positron</option>
         <option value="osm">OpenStreetMap</option>
         <option value="esri">Esri World Imagery</option>
       </select>
     </div>
   </header>
 
+  <!-- CONTENIDO PRINCIPAL -->
   <main>
     <aside class="panel">
       <div class="panel-section">
@@ -39,13 +41,13 @@
       <div class="panel-section">
         <h3>Leyenda</h3>
         <div id="legend" class="legend">
-          <p>Las capas se mostrarán según su simbología.</p>
+          <p>Activa o desactiva las capas desde el panel superior.</p>
         </div>
       </div>
 
       <div class="panel-section">
         <h3>Info</h3>
-        <p>Haz click en cualquier elemento para ver sus atributos.</p>
+        <p>Haz click sobre los elementos del mapa para ver sus atributos.</p>
       </div>
     </aside>
 
@@ -59,8 +61,10 @@
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+  <!-- Plugin para patrones (rayado en Cacao) -->
+  <script src="https://unpkg.com/leaflet.pattern/dist/leaflet.pattern.min.js"></script>
+
   <!-- Script principal -->
   <script src="script.js"></script>
-
 </body>
 </html>
