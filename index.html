@@ -4,13 +4,20 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Geovisor Agrícola de la Parroquia de Molleturo</title>
+
+  <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Estilos del proyecto -->
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
+
   <!-- Top bar -->
   <header class="topbar">
     <h1>Geovisor Agrícola de la Parroquia de Molleturo</h1>
+
     <div class="basemap-select">
       <label for="basemap">Mapa base:</label>
       <select id="basemap">
@@ -22,7 +29,7 @@
     </div>
   </header>
 
-  <!-- Map + side panel -->
+  <!-- Main content: panel + map -->
   <main>
     <aside class="panel">
       <div class="panel-section">
@@ -39,17 +46,21 @@
         <h3>Info</h3>
         <p>Pasa el cursor o haz click en el mapa para ver atributos.</p>
       </div>
+
     </aside>
 
     <div id="map"></div>
   </main>
 
   <footer class="footer">
-    <span>© Elaborado por Geopaz_Eguez&Pazmino</span>
+    <span>© Elaborado por Geopaz_Eguez&Pazmiño</span>
   </footer>
 
+  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Script principal -->
   <script src="script.js"></script>
+
 </body>
 </html>
-
