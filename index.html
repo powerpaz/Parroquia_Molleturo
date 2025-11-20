@@ -3,24 +3,29 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <title>Geovisor Agrícola de la Parroquia de Molleturo</title>
 
   <!-- Leaflet -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
 
-  <!-- Estilos del proyecto -->
+  <!-- Estilos personalizados (estética Mapbox) -->
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
-  <!-- Top bar -->
+  <!-- TOP BAR -->
   <header class="topbar">
     <h1>Geovisor Agrícola de la Parroquia de Molleturo</h1>
 
     <div class="basemap-select">
       <label for="basemap">Mapa base:</label>
       <select id="basemap">
+        <option value="stadiamaps">Mapbox Light Style</option>
         <option value="carto">Carto Positron</option>
         <option value="osm">OpenStreetMap</option>
         <option value="esri">Esri World Imagery</option>
@@ -29,9 +34,10 @@
     </div>
   </header>
 
-  <!-- Main content: panel + map -->
+  <!-- CONTENIDO PRINCIPAL -->
   <main>
     <aside class="panel">
+
       <div class="panel-section">
         <h3>Capas</h3>
         <div id="layerList" class="layer-list"></div>
@@ -39,24 +45,28 @@
 
       <div class="panel-section">
         <h3>Leyenda</h3>
-        <div id="legend" class="legend"></div>
+        <div id="legend" class="legend">
+          <p>Las capas se mostrarán aquí según su color.</p>
+        </div>
       </div>
 
       <div class="panel-section">
         <h3>Info</h3>
-        <p>Pasa el cursor o haz click en el mapa para ver atributos.</p>
+        <p>Pasa el cursor o haz click en cualquier elemento del mapa.</p>
       </div>
 
     </aside>
 
+    <!-- MAPA -->
     <div id="map"></div>
   </main>
 
+  <!-- FOOTER -->
   <footer class="footer">
-    <span>© Elaborado por Geopaz_Eguez&Pazmiño</span>
+    © Geopaz_Eguez & Pazmiño — 2025
   </footer>
 
-  <!-- Leaflet JS -->
+  <!-- Leaflet -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <!-- Script principal -->
