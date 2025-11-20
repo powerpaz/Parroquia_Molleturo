@@ -17,30 +17,34 @@
 <body>
   <!-- Barra superior -->
   <header class="topbar">
-    <div class="topbar-left">
+    <!-- 2 logos a la izquierda -->
+    <div class="topbar-logos topbar-logos-left">
+      <img src="logo_unibonn.png" alt="Universität Bonn" />
+      <img src="logo_zef.png" alt="ZEF - Center for Development Research" />
+    </div>
+
+    <!-- Centro: título y selector de mapa -->
+    <div class="topbar-center">
       <h1>
         The Cocoa Society: Navigating Agrarian Extractivism and Food Sovereignty
         in Molleturo-Azuay, Ecuador.
       </h1>
 
-      <!-- Logos aliados -->
-      <div class="topbar-logos">
-        <img src="logo_unibonn.png" alt="Universität Bonn" />
-        <img src="logo_zef.png" alt="ZEF - Center for Development Research" />
-        <img src="logo_rlc.png" alt="Right Livelihood College" />
-        <img src="logo_fiat_panis.png" alt="Foundation fiat panis" />
+      <div class="basemap-select">
+        <label for="basemap">Mapa base:</label>
+        <select id="basemap">
+          <option value="voyager">Mapbox style (Voyager)</option>
+          <option value="positron">Mapbox Light style</option>
+          <option value="osm">OpenStreetMap</option>
+          <option value="esri">Esri World Imagery</option>
+        </select>
       </div>
     </div>
 
-    <!-- Selector de mapa base -->
-    <div class="basemap-select">
-      <label for="basemap">Mapa base:</label>
-      <select id="basemap">
-        <option value="voyager">Mapbox style (Voyager)</option>
-        <option value="positron">Mapbox Light style</option>
-        <option value="osm">OpenStreetMap</option>
-        <option value="esri">Esri World Imagery</option>
-      </select>
+    <!-- 2 logos a la derecha -->
+    <div class="topbar-logos topbar-logos-right">
+      <img src="logo_rlc.png" alt="Right Livelihood College" />
+      <img src="logo_fiat_panis.png" alt="Foundation fiat panis" />
     </div>
   </header>
 
