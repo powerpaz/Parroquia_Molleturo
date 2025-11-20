@@ -67,7 +67,8 @@ map.createPane("pane_tematica").style.zIndex = 500;
 map.createPane("pane_puntos").style.zIndex = 600;
 
 /* =========================================================
-   DEFINICIÓN DE CAPAS (SOLO 3)
+   DEFINICIÓN DE CAPAS
+   🔹 SOLO 3 CAPAS: Molleturo, Comunidades, Cacao
 ========================================================= */
 const layersConfig = [
 
@@ -120,7 +121,7 @@ const layersConfig = [
     }
   },
 
-  // ----- Cacao Areas de Cultivo (rayado o sólido) -----
+  // ----- Cacao Áreas de Cultivo (rayado o sólido) -----
   {
     id: "Cacao",
     label: "Áreas de cultivo de cacao",
@@ -193,7 +194,7 @@ layerListEl.addEventListener("change", async e => {
     const data = await fetch(cfg.url).then(r => r.json());
     const layer = L.geoJSON(data, {
       pane: cfg.pane,
-      style: typeof cfg.style === "function" ? cfg.style : cfg.style,
+      style: cfg.style,
       pointToLayer: cfg.pointToLayer,
       onEachFeature: cfg.onEachFeature
     });
