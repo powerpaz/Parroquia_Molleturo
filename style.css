@@ -9,56 +9,53 @@ body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, "Helvetica Neue", Arial, sans-serif;
-  color: #0f172a;
+  color: #111827; /* letras negras */
 }
 
 /* ---------- Layout general ---------- */
 main {
   display: flex;
-  height: calc(100vh - 72px - 32px); /* alto total menos header y footer */
+  height: calc(100vh - 80px - 32px); /* alto total menos header y footer */
 }
 
-/* ---------- Barra superior tipo Mapbox ---------- */
+/* ---------- Barra superior ---------- */
 .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 8px 16px;
-  background: #0f172a;
-  color: #f9fafb;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.35);
+  background: #ffffff;          /* fondo blanco */
+  color: #111827;               /* texto negro */
+  border-bottom: 1px solid #e5e7eb;
 }
 
-/* Contenedor del título + logos */
-.topbar-left {
+/* Centro: título + selector */
+.topbar-center {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  align-items: center;        /* centra horizontalmente el contenido */
+  align-items: center;          /* centra contenido horizontal */
+  gap: 6px;
+  padding: 0 16px;
 }
 
-/* Título del proyecto */
-.topbar h1 {
+.topbar-center h1 {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  text-align: center;         /* texto centrado */
+  text-align: center;           /* título centrado */
 }
 
-/* ---------- Logos en topbar ---------- */
+/* ---------- Logos ---------- */
 .topbar-logos {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 2px;
 }
 
 .topbar-logos img {
   height: 30px;
   object-fit: contain;
-  background: #f9fafb;
-  border-radius: 3px;
-  padding: 2px 4px;
 }
 
 /* ---------- Selector de mapa base ---------- */
@@ -160,6 +157,17 @@ main {
 
 /* ---------- Responsive básico ---------- */
 @media (max-width: 900px) {
+  .topbar {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .topbar-center {
+    order: -1;                 /* título arriba de los logos en pantallas pequeñas */
+    padding: 0;
+  }
+
   main {
     flex-direction: column;
   }
@@ -172,17 +180,6 @@ main {
   }
 
   #map {
-    height: calc(100vh - 72px - 220px - 32px);
-  }
-
-  .topbar {
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .basemap-select {
-    align-self: stretch;
-    justify-content: center;
+    height: calc(100vh - 80px - 220px - 32px);
   }
 }
