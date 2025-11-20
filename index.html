@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Geovisor Agrícola de la Parroquia de Molleturo</title>
 
-  <!-- Leaflet -->
+  <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -20,8 +20,8 @@
     <div class="topbar-left">
       <h1>Geovisor Agrícola de la Parroquia de Molleturo</h1>
 
+      <!-- Logos aliados -->
       <div class="topbar-logos">
-        <!-- Logos aliados -->
         <img src="logo_unibonn.png" alt="Universität Bonn" />
         <img src="logo_zef.png" alt="ZEF - Center for Development Research" />
         <img src="logo_rlc.png" alt="Right Livelihood College" />
@@ -29,6 +29,7 @@
       </div>
     </div>
 
+    <!-- Selector de mapa base -->
     <div class="basemap-select">
       <label for="basemap">Mapa base:</label>
       <select id="basemap">
@@ -51,7 +52,7 @@
       <div class="panel-section">
         <h3>Leyenda</h3>
         <div id="legend" class="legend">
-          <p>Activa o desactiva las capas desde el panel superior.</p>
+          <p>Activa o desactiva las capas desde el panel izquierdo.</p>
         </div>
       </div>
 
@@ -71,7 +72,7 @@
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <!-- Plugin opcional para patrón rayado de cacao -->
+  <!-- Plugin opcional para patrón rayado (cacao) -->
   <script src="https://unpkg.com/leaflet.pattern/leaflet.pattern.min.js"></script>
 
   <!-- Lógica del mapa -->
