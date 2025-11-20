@@ -7,15 +7,11 @@
   <title>Geovisor Agrícola de la Parroquia de Molleturo</title>
 
   <!-- Leaflet -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-  <!-- Estilos personalizados (estética Mapbox) -->
+  <!-- Estilo personalizado (Mapbox-like) -->
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
 
   <!-- TOP BAR -->
@@ -25,19 +21,16 @@
     <div class="basemap-select">
       <label for="basemap">Mapa base:</label>
       <select id="basemap">
-        <option value="stadiamaps">Mapbox Light Style</option>
-        <option value="carto">Carto Positron</option>
+        <option value="voyager">Mapbox Light (Voyager)</option>
+        <option value="positron">Mapbox Positron</option>
         <option value="osm">OpenStreetMap</option>
         <option value="esri">Esri World Imagery</option>
-        <option value="toner">Stamen Toner Lite</option>
       </select>
     </div>
   </header>
 
-  <!-- CONTENIDO PRINCIPAL -->
   <main>
     <aside class="panel">
-
       <div class="panel-section">
         <h3>Capas</h3>
         <div id="layerList" class="layer-list"></div>
@@ -46,27 +39,24 @@
       <div class="panel-section">
         <h3>Leyenda</h3>
         <div id="legend" class="legend">
-          <p>Las capas se mostrarán aquí según su color.</p>
+          <p>Las capas se mostrarán según su simbología.</p>
         </div>
       </div>
 
       <div class="panel-section">
         <h3>Info</h3>
-        <p>Pasa el cursor o haz click en cualquier elemento del mapa.</p>
+        <p>Haz click en cualquier elemento para ver sus atributos.</p>
       </div>
-
     </aside>
 
-    <!-- MAPA -->
     <div id="map"></div>
   </main>
 
-  <!-- FOOTER -->
   <footer class="footer">
     © Geopaz_Eguez & Pazmiño — 2025
   </footer>
 
-  <!-- Leaflet -->
+  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <!-- Script principal -->
