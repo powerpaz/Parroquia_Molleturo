@@ -42,15 +42,22 @@ document.getElementById("basemap").addEventListener("change", e => {
 });
 
 /* =========================================================
-   PATRÓN RAYADO PARA CACAO
+   PATRÓN RAYADO PARA CACAO (con fallback si falla plugin)
 ========================================================= */
-const cacaoPattern = new L.StripePattern({
-  weight: 2,
-  spaceWeight: 4,
-  color: "#000000",
-  opacity: 0.7,
-  angle: 45
-}).addTo(map);
+let cacaoPattern = null;
+try {
+  if (L.StripePattern) {
+    cacaoPattern = new L.StripePattern({
+      weight: 2,
+      spaceWeight: 4,
+      color: "#000000",
+      opacity: 0.7,
+      angle: 45
+    }).addTo(map);
+  }
+} catch (err) {
+  console.warn("No se pudo cargar leaflet.pattern, usando relleno sólido.", err);
+}
 
 /* =========================================================
    PANES
@@ -113,17 +120,28 @@ const layersConfig = [
     }
   },
 
-  // ----- Cacao Areas de Cultivo (rayado) -----
+  // ----- Cacao Areas de Cultivo (rayado o sólido) -----
   {
     id: "Cacao",
     label: "Áreas de cultivo de cacao",
     url: "Cacao Areas de Cultivo.geojson",
     pane: "pane_tematica",
-    style: {
-      color: "#047857",
-      weight: 1,
-      fillPattern: cacaoPattern
+
+    // estilo como función para usar patrón si existe
+    style: () => {
+      const base = {
+        color: "#047857",
+        weight: 1
+      };
+      if (cacaoPattern) {
+        base.fillPattern = cacaoPattern;
+      } else {
+        base.fillColor = "#bbf7d0";
+        base.fillOpacity = 0.6;
+      }
+      return base;
     },
+
     onEachFeature: (f, l) => {
       const p = f.properties || {};
       const label = p.label ?? "Cacao";
@@ -332,6 +350,7 @@ layerListEl.addEventListener("change", async e => {
 
 /* =========================================================
    ARRANQUE: CAPAS PRENDIDAS POR DEFECTO
+   (ZAE2014 y ZAE2020 quedan apagadas)
 ========================================================= */
 
 const autoOnIds = [
@@ -343,9 +362,9 @@ const autoOnIds = [
   "Sectores2022",
   "Uso2015",
   "Capacidad2021",
-  "Aptitud",
-  "ZAE2014",
-  "ZAE2020"
+  "Aptitud"
+  // "ZAE2014",
+  // "ZAE2020"
 ];
 
 (() => {
