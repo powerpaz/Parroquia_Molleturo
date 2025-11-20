@@ -1,6 +1,5 @@
 /* =========================================================
-   Estética tipo MAPBOX Light / Streets
-   Paleta moderna, UI minimalista y limpia
+   Estética tipo MAPBOX Light / Voyager
 ========================================================= */
 
 /* ===== GENERAL ===== */
@@ -22,7 +21,7 @@ main {
   flex-grow: 1;
 }
 
-/* ======= TOP BAR ======= */
+/* ===== TOP BAR ===== */
 .topbar {
   background: #ffffff;
   border-bottom: 1px solid #e2e8f0;
@@ -30,7 +29,7 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
 
 .topbar h1 {
@@ -64,10 +63,6 @@ main {
   box-shadow: 1px 0 5px rgba(0,0,0,0.05);
 }
 
-.panel-section {
-  margin-bottom: 25px;
-}
-
 .panel-section h3 {
   margin: 0 0 10px;
   font-size: 15px;
@@ -98,7 +93,6 @@ main {
   padding: 12px;
   border-radius: 6px;
   font-size: 13px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
 
 /* ===== FOOTER ===== */
@@ -115,14 +109,14 @@ main {
 .label-text {
   font-weight: 600;
   color: #0f172a;
-  font-size: 13px;
+  font-size: 11px;
   background: rgba(255,255,255,0.85);
-  padding: 2px 6px;
-  border-radius: 4px;
-  box-shadow: 0 0 3px rgba(0,0,0,0.2);
+  padding: 1px 4px;
+  border-radius: 3px;
+  box-shadow: 0 0 3px rgba(0,0,0,0.17);
 }
 
-/* ===== POPUP MAPBOX STYLE ===== */
+/* POPUPS */
 .leaflet-popup-content-wrapper {
   border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
