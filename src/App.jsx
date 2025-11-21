@@ -1,21 +1,21 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import Map, { Source, Layer, NavigationControl, ScaleControl, FullscreenControl } from 'react-map-gl';
 import './App.css';
 
 // IMPORTANTE: Reemplaza con tu token de Mapbox
-// Obtén uno gratis en: https://account.mapbox.com/
 const MAPBOX_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
 
 function App() {
   const mapRef = useRef();
   
-  // Estado inicial del mapa centrado en Ecuador
   const [viewState, setViewState] = useState({
-    longitude: -79.0,
-    latitude: -2.0,
-    zoom: 8
+    longitude: -79.5,
+    latitude: -2.7,
+    zoom: 11
   });
 
+  const [basemap, setBasemap] = useState('mapbox://styles/mapbox/outdoors-v12');
+  
   const [layers, setLayers] = useState({
     provincias: {
       visible: true,
@@ -30,10 +30,25 @@ function App() {
       data: null,
       name: 'Parroquias',
       color: '#ff6b6b'
+    },
+    cacao: {
+      visible: true,
+      opacity: 0.6,
+      data: null,
+      name: 'Zonas de Cacao',
+      color: '#8B4513'
     }
   });
 
   const [loading, setLoading] = useState(false);
+
+  // Estilos de mapa disponibles
+  const basemapStyles = {
+    voyager: 'mapbox://styles/mapbox/outdoors-v12',
+    positron: 'mapbox://styles/mapbox/light-v11',
+    osm: 'mapbox://styles/mapbox/streets-v12',
+    esri: 'mapbox://styles/mapbox/satellite-streets-v12'
+  };
 
   // Cargar GeoJSON desde archivo
   const handleFileUpload = async (event, layerKey) => {
@@ -67,7 +82,6 @@ function App() {
         }
       }));
 
-      // Ajustar el mapa a los límites del GeoJSON
       if (geojson.type === 'FeatureCollection' && geojson.features.length > 0) {
         fitMapToGeoJSON(geojson);
       }
@@ -75,14 +89,12 @@ function App() {
       console.log('✅ Capa cargada exitosamente');
     } catch (error) {
       console.error('❌ Error cargando GeoJSON:', error);
-      console.error('📋 Stack trace:', error.stack);
       alert('Error al cargar el archivo GeoJSON. Verifica que sea un archivo válido.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Ajustar el mapa a los límites del GeoJSON
   const fitMapToGeoJSON = (geojson) => {
     if (!mapRef.current) return;
 
@@ -116,7 +128,6 @@ function App() {
     }
   };
 
-  // Alternar visibilidad de capa
   const toggleLayer = (layerKey) => {
     setLayers(prev => ({
       ...prev,
@@ -127,7 +138,6 @@ function App() {
     }));
   };
 
-  // Cambiar opacidad de capa
   const handleOpacityChange = (layerKey, opacity) => {
     setLayers(prev => ({
       ...prev,
@@ -138,7 +148,11 @@ function App() {
     }));
   };
 
-  // Estilo de capa de polígonos (para provincias)
+  const handleBasemapChange = (e) => {
+    setBasemap(basemapStyles[e.target.value]);
+  };
+
+  // Estilos de capas
   const provinciasLayerStyle = {
     id: 'provincias-fill',
     type: 'fill',
@@ -157,7 +171,6 @@ function App() {
     }
   };
 
-  // Estilo de capa de polígonos (para parroquias)
   const parroquiasLayerStyle = {
     id: 'parroquias-fill',
     type: 'fill',
@@ -176,99 +189,186 @@ function App() {
     }
   };
 
+  const cacaoLayerStyle = {
+    id: 'cacao-fill',
+    type: 'fill',
+    paint: {
+      'fill-color': layers.cacao.color,
+      'fill-opacity': layers.cacao.opacity
+    }
+  };
+
+  const cacaoLineLayerStyle = {
+    id: 'cacao-line',
+    type: 'line',
+    paint: {
+      'line-color': '#654321',
+      'line-width': 1
+    }
+  };
+
   return (
-    <div className="map-container">
-      {loading && (
-        <div className="loading">
-          <div className="spinner"></div>
-          <p style={{ marginTop: '10px', textAlign: 'center' }}>Cargando...</p>
+    <>
+      {/* Barra superior */}
+      <header className="topbar">
+        <div className="topbar-logos topbar-logos-left">
+          <img src="/logo_unibonn.png" alt="Universität Bonn" />
+          <img src="/logo_zef.png" alt="ZEF - Center for Development Research" />
         </div>
-      )}
-
-      <Map
-        ref={mapRef}
-        {...viewState}
-        onMove={evt => setViewState(evt.viewState)}
-        mapboxAccessToken={MAPBOX_TOKEN}
-        style={{ width: '100%', height: '100%' }}
-        mapStyle="mapbox://styles/mapbox/streets-v12"
-      >
-        {/* Controles de navegación */}
-        <NavigationControl position="top-left" />
-        <ScaleControl position="bottom-left" />
-        <FullscreenControl position="top-left" />
-
-        {/* Capa de Provincias */}
-        {layers.provincias.visible && layers.provincias.data && (
-          <Source id="provincias-source" type="geojson" data={layers.provincias.data}>
-            <Layer {...provinciasLayerStyle} />
-            <Layer {...provinciasLineLayerStyle} />
-          </Source>
-        )}
-
-        {/* Capa de Parroquias */}
-        {layers.parroquias.visible && layers.parroquias.data && (
-          <Source id="parroquias-source" type="geojson" data={layers.parroquias.data}>
-            <Layer {...parroquiasLayerStyle} />
-            <Layer {...parroquiasLineLayerStyle} />
-          </Source>
-        )}
-      </Map>
-
-      {/* Panel de control de capas */}
-      <div className="layer-control">
-        <h3>Capas del Mapa</h3>
         
-        {Object.entries(layers).map(([key, layer]) => (
-          <div key={key} className="layer-item">
-            <label>
-              <input
-                type="checkbox"
-                checked={layer.visible}
-                onChange={() => toggleLayer(key)}
-              />
-              {layer.name}
-            </label>
-            
-            {layer.data && layer.visible && (
-              <div className="opacity-control">
-                <label>
-                  Opacidad: {Math.round(layer.opacity * 100)}%
-                  <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.1"
-                    value={layer.opacity}
-                    onChange={(e) => handleOpacityChange(key, e.target.value)}
-                  />
-                </label>
-              </div>
-            )}
-            
-            {!layer.data && (
-              <div style={{ marginTop: '5px' }}>
-                <label style={{ 
-                  fontSize: '11px', 
-                  padding: '4px 8px', 
-                  background: '#f0f0f0',
-                  borderRadius: '3px',
-                  cursor: 'pointer'
-                }}>
-                  Cargar {layer.name}
-                  <input
-                    type="file"
-                    accept=".geojson,.json"
-                    onChange={(e) => handleFileUpload(e, key)}
-                    style={{ display: 'none' }}
-                  />
-                </label>
-              </div>
-            )}
+        <div className="topbar-center">
+          <h1>
+            The Cocoa Society: Navigating Agrarian Extractivism and Food Sovereignty
+            in Molleturo-Azuay, Ecuador.
+          </h1>
+          <div className="basemap-select">
+            <label htmlFor="basemap">Mapa base:</label>
+            <select id="basemap" onChange={handleBasemapChange}>
+              <option value="voyager">Mapbox style (Voyager)</option>
+              <option value="positron">Mapbox Light style</option>
+              <option value="osm">OpenStreetMap</option>
+              <option value="esri">Esri World Imagery</option>
+            </select>
           </div>
-        ))}
-      </div>
-    </div>
+        </div>
+        
+        <div className="topbar-logos topbar-logos-right">
+          <img src="/logo_rlc.png" alt="Right Livelihood College" />
+          <img src="/logo_fiat_panis.png" alt="Foundation fiat panis" />
+        </div>
+      </header>
+
+      {/* Panel lateral + mapa */}
+      <main className="main-container">
+        <aside className="panel">
+          <div className="panel-section">
+            <h3>Capas</h3>
+            <div className="layer-list">
+              {Object.entries(layers).map(([key, layer]) => (
+                <div key={key} className="layer-item">
+                  <label className="layer-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={layer.visible}
+                      onChange={() => toggleLayer(key)}
+                    />
+                    <span>{layer.name}</span>
+                  </label>
+                  
+                  {!layer.data && (
+                    <div className="layer-load-btn">
+                      <label className="load-file-label">
+                        📁 Cargar archivo
+                        <input
+                          type="file"
+                          accept=".geojson,.json"
+                          onChange={(e) => handleFileUpload(e, key)}
+                          style={{ display: 'none' }}
+                        />
+                      </label>
+                    </div>
+                  )}
+                  
+                  {layer.data && layer.visible && (
+                    <div className="opacity-control">
+                      <label>
+                        Opacidad: {Math.round(layer.opacity * 100)}%
+                        <input
+                          type="range"
+                          min="0"
+                          max="1"
+                          step="0.1"
+                          value={layer.opacity}
+                          onChange={(e) => handleOpacityChange(key, e.target.value)}
+                        />
+                      </label>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="panel-section">
+            <h3>Leyenda</h3>
+            <div className="legend">
+              {Object.entries(layers).map(([key, layer]) => (
+                layer.visible && layer.data && (
+                  <div key={key} className="legend-item">
+                    <span 
+                      className="legend-color" 
+                      style={{ 
+                        backgroundColor: layer.color,
+                        opacity: layer.opacity 
+                      }}
+                    />
+                    <span className="legend-label">{layer.name}</span>
+                  </div>
+                )
+              ))}
+              {!Object.values(layers).some(l => l.visible && l.data) && (
+                <p>Activa o carga las capas desde el panel superior.</p>
+              )}
+            </div>
+          </div>
+
+          <div className="panel-section">
+            <h3>Info</h3>
+            <p>Haz clic sobre los elementos del mapa para ver sus atributos.</p>
+          </div>
+        </aside>
+
+        <div className="map-wrapper">
+          {loading && (
+            <div className="loading">
+              <div className="spinner"></div>
+              <p>Cargando...</p>
+            </div>
+          )}
+
+          <Map
+            ref={mapRef}
+            {...viewState}
+            onMove={evt => setViewState(evt.viewState)}
+            mapboxAccessToken={MAPBOX_TOKEN}
+            style={{ width: '100%', height: '100%' }}
+            mapStyle={basemap}
+          >
+            <NavigationControl position="top-left" />
+            <ScaleControl position="bottom-left" />
+            <FullscreenControl position="top-left" />
+
+            {/* Capa de Provincias */}
+            {layers.provincias.visible && layers.provincias.data && (
+              <Source id="provincias-source" type="geojson" data={layers.provincias.data}>
+                <Layer {...provinciasLayerStyle} />
+                <Layer {...provinciasLineLayerStyle} />
+              </Source>
+            )}
+
+            {/* Capa de Parroquias */}
+            {layers.parroquias.visible && layers.parroquias.data && (
+              <Source id="parroquias-source" type="geojson" data={layers.parroquias.data}>
+                <Layer {...parroquiasLayerStyle} />
+                <Layer {...parroquiasLineLayerStyle} />
+              </Source>
+            )}
+
+            {/* Capa de Cacao */}
+            {layers.cacao.visible && layers.cacao.data && (
+              <Source id="cacao-source" type="geojson" data={layers.cacao.data}>
+                <Layer {...cacaoLayerStyle} />
+                <Layer {...cacaoLineLayerStyle} />
+              </Source>
+            )}
+          </Map>
+        </div>
+      </main>
+
+      <footer className="footer">
+        <span>© Elaborado por Geopaz_Eguez&Pazmiño</span>
+      </footer>
+    </>
   );
 }
 
