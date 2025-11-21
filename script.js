@@ -1,6 +1,6 @@
 /* =========================================================
    Geovisor Agrícola – Estética MAPBOX Light
-   Solo Límite, Comunidades y Cacao (rayado)
+   Ahora con 4 capas: Límite, Comunidades, Cacao y Provincias
 ========================================================= */
 
 /* =========================================================
@@ -68,9 +68,27 @@ map.createPane("pane_puntos").style.zIndex = 600;
 
 /* =========================================================
    DEFINICIÓN DE CAPAS
-   🔹 SOLO 3 CAPAS: Molleturo, Comunidades, Cacao
+   🔹 AHORA 4 CAPAS: Molleturo, Comunidades, Cacao, Provincias
 ========================================================= */
 const layersConfig = [
+
+  // ----- Provincias simplificado -----
+  {
+    id: "Provincias",
+    label: "Provincias (simplificado)",
+    url: "provincias_simplificado.geojson",
+    pane: "pane_limites",
+    style: {
+      color: "#6b7280",
+      weight: 1.5,
+      fillOpacity: 0.1,
+      fillColor: "#e5e7eb"
+    },
+    onEachFeature: (f, l) => {
+      const nombre = f.properties?.nombre ?? "Provincia";
+      l.bindPopup(`<b>Provincia:</b> ${nombre}`);
+    }
+  },
 
   // ----- Límite parroquial -----
   {
@@ -159,7 +177,7 @@ const layersConfig = [
 ];
 
 /* =========================================================
-   PANEL LATERAL (check solo para esas 3 capas)
+   PANEL LATERAL (check para las 4 capas)
 ========================================================= */
 const layerStore = new Map();
 const layerListEl = document.getElementById("layerList");
@@ -210,6 +228,7 @@ layerListEl.addEventListener("change", async e => {
    ARRANQUE: CAPAS PRENDIDAS POR DEFECTO
 ========================================================= */
 const autoOnIds = [
+  "Provincias", // 👈 nueva capa activa por defecto
   "Molleturo",
   "Comunidades",
   "Cacao"
