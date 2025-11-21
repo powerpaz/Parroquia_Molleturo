@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Map, { Source, Layer, NavigationControl, ScaleControl, FullscreenControl } from 'react-map-gl';
 import './App.css';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 // IMPORTANTE: Reemplaza con tu token de Mapbox
 const MAPBOX_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
@@ -15,6 +16,8 @@ function App() {
   });
 
   const [basemap, setBasemap] = useState('mapbox://styles/mapbox/outdoors-v12');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   
   const [layers, setLayers] = useState({
     provincias: {
@@ -40,7 +43,12 @@ function App() {
     }
   });
 
-  const [loading, setLoading] = useState(false);
+  // Verificar que React está funcionando
+  useEffect(() => {
+    console.log('✅ App.jsx cargado correctamente');
+    console.log('✅ React está funcionando');
+    console.log('📍 Mapbox Token:', MAPBOX_TOKEN ? 'Presente' : 'FALTA');
+  }, []);
 
   // Estilos de mapa disponibles
   const basemapStyles = {
@@ -50,13 +58,13 @@ function App() {
     esri: 'mapbox://styles/mapbox/satellite-streets-v12'
   };
 
-  // Cargar GeoJSON desde archivo
   const handleFileUpload = async (event, layerKey) => {
     const file = event.target.files[0];
     if (!file) return;
 
     console.log('📁 Cargando archivo:', file.name);
     setLoading(true);
+    setError(null);
     
     try {
       const text = await file.text();
@@ -71,7 +79,6 @@ function App() {
         const firstFeature = geojson.features[0];
         console.log('📊 Primera feature:', firstFeature);
         console.log('📊 Tipo de geometría:', firstFeature.geometry?.type);
-        console.log('📊 Primera coordenada:', firstFeature.geometry?.coordinates[0]);
       }
       
       setLayers(prev => ({
@@ -89,7 +96,7 @@ function App() {
       console.log('✅ Capa cargada exitosamente');
     } catch (error) {
       console.error('❌ Error cargando GeoJSON:', error);
-      alert('Error al cargar el archivo GeoJSON. Verifica que sea un archivo válido.');
+      setError(`Error al cargar ${file.name}: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -212,8 +219,14 @@ function App() {
       {/* Barra superior */}
       <header className="topbar">
         <div className="topbar-logos topbar-logos-left">
-          <img src="/logo_unibonn.png" alt="Universität Bonn" />
-          <img src="/logo_zef.png" alt="ZEF - Center for Development Research" />
+          <img src="/logo_unibonn.png" alt="Universität Bonn" onError={(e) => {
+            console.error('❌ Error cargando logo_unibonn.png');
+            e.target.style.display = 'none';
+          }} />
+          <img src="/logo_zef.png" alt="ZEF" onError={(e) => {
+            console.error('❌ Error cargando logo_zef.png');
+            e.target.style.display = 'none';
+          }} />
         </div>
         
         <div className="topbar-center">
@@ -233,8 +246,14 @@ function App() {
         </div>
         
         <div className="topbar-logos topbar-logos-right">
-          <img src="/logo_rlc.png" alt="Right Livelihood College" />
-          <img src="/logo_fiat_panis.png" alt="Foundation fiat panis" />
+          <img src="/logo_rlc.png" alt="RLC" onError={(e) => {
+            console.error('❌ Error cargando logo_rlc.png');
+            e.target.style.display = 'none';
+          }} />
+          <img src="/logo_fiat_panis.png" alt="Fiat Panis" onError={(e) => {
+            console.error('❌ Error cargando logo_fiat_panis.png');
+            e.target.style.display = 'none';
+          }} />
         </div>
       </header>
 
@@ -315,6 +334,18 @@ function App() {
           <div className="panel-section">
             <h3>Info</h3>
             <p>Haz clic sobre los elementos del mapa para ver sus atributos.</p>
+            {error && (
+              <div style={{ 
+                marginTop: '10px', 
+                padding: '10px', 
+                background: '#fee', 
+                borderRadius: '4px',
+                fontSize: '12px',
+                color: '#c00'
+              }}>
+                {error}
+              </div>
+            )}
           </div>
         </aside>
 
@@ -333,12 +364,15 @@ function App() {
             mapboxAccessToken={MAPBOX_TOKEN}
             style={{ width: '100%', height: '100%' }}
             mapStyle={basemap}
+            onError={(e) => {
+              console.error('❌ Error del mapa:', e);
+              setError('Error cargando el mapa. Verifica tu token de Mapbox.');
+            }}
           >
             <NavigationControl position="top-left" />
             <ScaleControl position="bottom-left" />
             <FullscreenControl position="top-left" />
 
-            {/* Capa de Provincias */}
             {layers.provincias.visible && layers.provincias.data && (
               <Source id="provincias-source" type="geojson" data={layers.provincias.data}>
                 <Layer {...provinciasLayerStyle} />
@@ -346,7 +380,6 @@ function App() {
               </Source>
             )}
 
-            {/* Capa de Parroquias */}
             {layers.parroquias.visible && layers.parroquias.data && (
               <Source id="parroquias-source" type="geojson" data={layers.parroquias.data}>
                 <Layer {...parroquiasLayerStyle} />
@@ -354,7 +387,6 @@ function App() {
               </Source>
             )}
 
-            {/* Capa de Cacao */}
             {layers.cacao.visible && layers.cacao.data && (
               <Source id="cacao-source" type="geojson" data={layers.cacao.data}>
                 <Layer {...cacaoLayerStyle} />
