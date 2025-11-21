@@ -75,7 +75,7 @@ const layersConfig = [
   // ----- Provincias simplificado -----
   {
     id: "Provincias",
-    label: "Provincias (simplificado)",
+    label: "Límite Provincial",
     url: "provincias_simplificado.geojson",
     pane: "pane_limites",
     style: {
