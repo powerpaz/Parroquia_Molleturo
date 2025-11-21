@@ -1,0 +1,140 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+}
+
+.map-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* Estilo para el logo de Mapbox */
+.mapboxgl-ctrl-logo {
+  display: block !important;
+}
+
+/* Panel de control de capas */
+.layer-control {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: white;
+  padding: 15px;
+  border-radius: 4px;
+  box-shadow: 0 0 0 2px rgba(0,0,0,.1);
+  z-index: 1;
+  max-width: 250px;
+}
+
+.layer-control h3 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.layer-control label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+}
+
+.layer-control input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.layer-control input[type="range"] {
+  width: 100%;
+  margin-top: 5px;
+}
+
+.layer-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.layer-item:last-child {
+  border-bottom: none;
+}
+
+.opacity-control {
+  margin-top: 5px;
+  font-size: 11px;
+  color: #777;
+}
+
+/* Popup personalizado */
+.mapboxgl-popup-content {
+  padding: 15px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.popup-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.popup-content {
+  font-size: 13px;
+  color: #555;
+}
+
+/* Loading spinner */
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Estilo para controles de navegación de Mapbox */
+.mapboxgl-ctrl-group {
+  background: white;
+  border-radius: 4px;
+}
+
+.mapboxgl-ctrl button {
+  width: 29px;
+  height: 29px;
+}
