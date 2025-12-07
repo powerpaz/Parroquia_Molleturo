@@ -185,16 +185,15 @@ main {
 }
 
 /* =========================================================
-   ⭐ LABELS PARA POBLADOS (NOMBRES DE COMUNIDADES)
+   ⭐ LABELS PARA POBLADOS (SOLO TEXTO SIN RECUADRO)
 ========================================================= */
 .label-poblado {
   font-size: 14px;
   font-weight: 600;
-  color: #111;
-  background: rgba(255, 255, 255, 0.85);
-  padding: 3px 8px;
-  border-radius: 6px;
-  border: 1px solid #1DB954;
+  color: #0f172a;  /* texto oscuro elegante */
+  background: transparent; 
+  padding: 0;
+  border: none;
   white-space: nowrap;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  text-shadow: 0 0 2px rgba(255,255,255,0.9); /* mejora legibilidad sin ser caja */
 }
