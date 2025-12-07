@@ -42,7 +42,7 @@ document.getElementById("basemap").addEventListener("change", e => {
 });
 
 /* =========================================================
-   PATRÓN RAYADO PARA CACAO (con fallback si no carga plugin)
+   PATRÓN RAYADO PARA CACAO
 ========================================================= */
 let cacaoPattern = null;
 try {
@@ -68,11 +68,10 @@ map.createPane("pane_puntos").style.zIndex = 600;
 
 /* =========================================================
    DEFINICIÓN DE CAPAS
-   🔹 AHORA 4 CAPAS: Molleturo, Comunidades, Cacao, Provincias
 ========================================================= */
 const layersConfig = [
 
-  // ----- Provincias simplificado -----
+  // ----- Provincias -----
   {
     id: "Provincias",
     label: "Límite Provincial",
@@ -94,7 +93,7 @@ const layersConfig = [
   {
     id: "Molleturo",
     label: "Límite Parroquial",
-    url: "Parroquia_MolleturoJSON.geojson",
+    url: "Parquia_MolleturoJSON.geojson",
     pane: "pane_limites",
     style: {
       color: "#0284c7",
@@ -132,14 +131,28 @@ const layersConfig = [
       const p = f.properties || {};
       const nombre = p.Nombre ?? p.nam ?? "Sin nombre";
       const pob = p.Pob_estudi ?? "s/i";
+
+      // --- Popup ---
       l.bindPopup(`
         <b>Comunidad:</b> ${nombre}<br>
         <b>Población estudio:</b> ${pob}
       `);
+
+      // === ⭐ ETIQUETA PERMANENTE AÑADIDA ⭐ ===
+      const c = l.getLatLng();
+      L.marker(c, {
+        icon: L.divIcon({
+          className: "label-poblado",
+          html: nombre,
+          iconSize: [120, 24],
+          iconAnchor: [60, -10]
+        })
+      }).addTo(map);
+      // =========================================
     }
   },
 
-  // ----- Cacao Áreas de Cultivo (rayado o sólido) -----
+  // ----- Cacao áreas -----
   {
     id: "Cacao",
     label: "Áreas de cultivo de cacao",
@@ -177,7 +190,7 @@ const layersConfig = [
 ];
 
 /* =========================================================
-   PANEL LATERAL (check para las 4 capas)
+   PANEL LATERAL
 ========================================================= */
 const layerStore = new Map();
 const layerListEl = document.getElementById("layerList");
@@ -225,14 +238,9 @@ layerListEl.addEventListener("change", async e => {
 });
 
 /* =========================================================
-   ARRANQUE: CAPAS PRENDIDAS POR DEFECTO
+   ARRANQUE AUTO
 ========================================================= */
-const autoOnIds = [
-  "Provincias", // 👈 nueva capa activa por defecto
-  "Molleturo",
-  "Comunidades",
-  "Cacao"
-];
+const autoOnIds = ["Provincias", "Molleturo", "Comunidades", "Cacao"];
 
 (() => {
   autoOnIds.forEach(id => {
