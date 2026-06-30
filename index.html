@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Cocoa Society</title>
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+
+  <!-- Estilos propios -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Barra superior -->
+  <header class="topbar">
+    <!-- 2 logos a la izquierda -->
+    <div class="topbar-logos topbar-logos-left">
+      <img src="logo_unibonn.png" alt="Universität Bonn" />
+      <img src="logo_zef.png" alt="ZEF - Center for Development Research" />
+    </div>
+
+    <!-- Centro: título y selector de mapa -->
+    <div class="topbar-center">
+      <h1>The Cocoa Society</h1>
+
+      <div class="basemap-select">
+        <label for="basemap">Base map:</label>
+        <select id="basemap">
+          <option value="voyager">Mapbox style (Voyager)</option>
+          <option value="positron">Mapbox Light style</option>
+          <option value="osm">OpenStreetMap</option>
+          <option value="esri">Esri World Imagery</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 2 logos a la derecha -->
+    <div class="topbar-logos topbar-logos-right">
+      <img src="logo_rlc.png" alt="Right Livelihood College" />
+      <img src="logo_fiat_panis.png" alt="Foundation fiat panis" />
+    </div>
+  </header>
+
+  <!-- Panel lateral + mapa -->
+  <main>
+    <aside class="panel">
+      <div class="panel-section">
+        <h3>Layers</h3>
+        <div id="layerList" class="layer-list"></div>
+      </div>
+
+      <div class="panel-section transition-widget">
+        <h3>Multitemporal transition</h3>
+
+        <div id="transitionStatus" class="transition-status">
+          Loading transition layers…
+        </div>
+
+        <div class="transition-controls-row">
+          <button id="transitionPrev" type="button" title="Previous layer">◀</button>
+          <button id="transitionPlay" type="button" title="Play animation">▶</button>
+          <button id="transitionNext" type="button" title="Next layer">▶</button>
+        </div>
+
+        <input
+          id="transitionSlider"
+          class="transition-slider"
+          type="range"
+          min="0"
+          max="0"
+          value="0"
+          step="1"
+          disabled
+        />
+
+        <div id="transitionCurrentLabel" class="transition-current-label">
+          No layers loaded
+        </div>
+
+        <label class="transition-opacity-label" for="transitionOpacity">
+          Transition opacity
+        </label>
+        <input
+          id="transitionOpacity"
+          class="transition-slider"
+          type="range"
+          min="0"
+          max="1"
+          value="0.55"
+          step="0.05"
+        />
+
+        <div class="transition-options">
+          <label>
+            <input id="transitionKeepPrevious" type="checkbox" />
+            Combine with previous layers
+          </label>
+          <label>
+            <input id="transitionAutoFit" type="checkbox" checked />
+            Zoom in when layer changes
+          </label>
+        </div>
+
+        <div id="transitionLayerList" class="transition-layer-list"></div>
+      </div>
+
+      <div class="panel-section">
+        <h3>Legend</h3>
+        <div id="legend" class="legend">
+          <p>Turn layers on or off from the left-hand panel.</p>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h3>Info</h3>
+        <p>Click on the map features to see their attributes.</p>
+      </div>
+    </aside>
+
+    <div id="map"></div>
+  </main>
+
+  <footer class="footer">
+    <span>© Produced by Geopaz_Eguez&Pazmiño</span>
+  </footer>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- topojson-client: decodifica TopoJSON (Parroquial.topo.json, Provincial.topo.json) a GeoJSON en el navegador -->
+  <script src="https://unpkg.com/topojson-client@3/dist/topojson-client.min.js"></script>
+
+  <!-- Lógica del mapa -->
+  <script src="script.js"></script>
+</body>
+</html>
